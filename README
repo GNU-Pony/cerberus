@@ -1,0 +1,8 @@
+A minimal unbloated login program
+
+The is no need for ~/.hushlogin,
+if you want last login and motto
+of the day to be printed, do so
+from your shell if $0 starts with
+a dash (-).
+
