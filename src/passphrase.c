@@ -72,6 +72,8 @@ char* get_passphrase(void)
  */
 void disable_echo()
 {
+  struct termios stty;
+  
   tcgetattr(STDIN_FILENO, &saved_stty);
   stty = saved_stty;
   stty.c_lflag &= ~ECHO;

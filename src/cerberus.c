@@ -22,7 +22,7 @@
 #include "passphrase.h"
 
 
-#define xfree(VAR)  ({ if (var)  free(var); })
+#define xfree(VAR)  ({ if (VAR)  free(VAR); })
 
 
 /**
