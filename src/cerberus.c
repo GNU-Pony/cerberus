@@ -17,8 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <stdio.h>
-#include <termios.h>
 #include <unistd.h>
+
+#include "passphrase.h"
+
+
+#define xfree(VAR)  ({ if (var)  free(var); })
 
 
 /**
@@ -32,24 +36,26 @@ int main(int argc, char** argv)
 {
   char* username = NULL;
   char* hostname = NULL;
+  char* passphrase = NULL;
   char preserve_env = 0;
-  struct termios saved_stty;
-  struct termios stty;
-  int i;
+  char skip_auth = 0;
   
   /* Disable echoing */
-  tcgetattr(STDIN_FILENO, &saved_stty);
-  stty = saved_stty;
-  stty.c_lflag &= ~ECHO;
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, &stty);
+  disable_echo();
   /* This should be done as early and quickly as possible so as little
      as possible of the passphrase gets leaked to the output if the user
      begins entering the passphrase directly after the username. */
+  
+  
+  /* Set proccess group ID */
+  setpgrp();
+  
   
   /* Parse command line arguments */
   {
     char double_dashed = 0;
     char hostname_on_next = 0;
+    int i;
     for (i = 1; i < argc; i++)
       {
 	char *arg = *(argv + i);
@@ -75,6 +81,7 @@ int main(int argc, char** argv)
 	      {
 		if (*(arg + 1))
 		  username = arg + 1;
+		skip_auth = 1;
 		break;
 	      }
 	    else if (c == '-')
@@ -94,13 +101,21 @@ int main(int argc, char** argv)
       }
   }
   
-  printf("Passphrase: ");
-  fflush(stdout);
+  
+  /* Get the passphrase, if -f has not been used */
+  if (skip_auth == 0)
+    {
+      printf("Passphrase: ");
+      fflush(stdout);
+      passphrase = get_passphrase();
+      printf("\n");
+    }
   
   
   /* Reset terminal settings */
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved_stty);
+  reenable_echo();
   
+  xfree(passphrase);
   return 0;
 }
 
