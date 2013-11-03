@@ -16,11 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdio.h>
-#include <unistd.h>
-
-#include "passphrase.h"
-#include "quit.h"
+#include "cerberus.h"
 
 
 /* The number of seconds before the program times out */
