@@ -6,7 +6,7 @@ CFLAGS = -std=gnu99 -Wall -Wextra
 CC_FLAGS = $(CPPFLAGS) $(CFLAGS) $(OPTIMISE)
 LD_FLAGS = $(LDFLAGS) $(CFLAGS) $(OPTIMISE)
 
-SRC = cerberus passphrase quit
+SRC = cerberus passphrase quit security
 OBJ = $(foreach S, $(SRC), obj/$(S).o)
 
 
