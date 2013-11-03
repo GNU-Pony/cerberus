@@ -125,6 +125,10 @@ int main(int argc, char** argv)
   alarm(TIMEOUT_SECONDS);
   
   
+  /* Make sure nopony is spying */
+  secure_tty();
+  
+  
   /* Get the passphrase, if -f has not been used */
   if (skip_auth == 0)
     {
