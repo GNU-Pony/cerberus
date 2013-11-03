@@ -20,8 +20,16 @@
 #include <unistd.h>
 
 #include "passphrase.h"
+#include "quit.h"
 
 
+/* The number of seconds before the program times out */
+#ifndef TIMEOUT_SECONDS
+#define TIMEOUT_SECONDS  60
+#endif
+
+
+/* Free if declared */
 #define xfree(VAR)  ({ if (VAR)  free(VAR); })
 
 
@@ -102,11 +110,28 @@ int main(int argc, char** argv)
   }
   
   
-  /* Get the passphrase, if -f has not been used */
+  /* Print ant we want a passphrase, if -f has not been used */
   if (skip_auth == 0)
     {
       printf("Passphrase: ");
       fflush(stdout);
+    }
+  /* Done early to make to program look like it is even faster than it is */
+  
+  
+  /* Set up clean quiting and time out */
+  signal(SIGALRM, timeout_quit);
+  signal(SIGQUIT, user_quit);
+  signal(SIGINT, user_quit);
+  siginterrupt(SIGALM, 1);
+  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGINT, 1);
+  alarm(TIMEOUT_SECONDS);
+  
+  
+  /* Get the passphrase, if -f has not been used */
+  if (skip_auth == 0)
+    {
       passphrase = get_passphrase();
       printf("\n");
     }
