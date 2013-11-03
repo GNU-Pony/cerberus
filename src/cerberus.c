@@ -119,7 +119,7 @@ int main(int argc, char** argv)
   signal(SIGALRM, timeout_quit);
   signal(SIGQUIT, user_quit);
   signal(SIGINT, user_quit);
-  siginterrupt(SIGALM, 1);
+  siginterrupt(SIGALRM, 1);
   siginterrupt(SIGQUIT, 1);
   siginterrupt(SIGINT, 1);
   alarm(TIMEOUT_SECONDS);

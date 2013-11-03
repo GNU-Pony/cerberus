@@ -1,7 +1,7 @@
 OPTIMISE = -Os
 CPPFLAGS = 
 LDFLAGS = 
-CFLAGS = -Wall -Wextra -pedantic
+CFLAGS = -std=gnu99 -Wall -Wextra
 
 CC_FLAGS = $(CPPFLAGS) $(CFLAGS) $(OPTIMISE)
 LD_FLAGS = $(LDFLAGS) $(CFLAGS) $(OPTIMISE)
@@ -20,6 +20,7 @@ bin/cerberus: $(OBJ)
 
 
 obj/%.o: src/%.c src/%.h
+	@mkdir -p obj
 	$(CC) $(CC_FLAGS) -o "$@" -c "$<"
 
 
