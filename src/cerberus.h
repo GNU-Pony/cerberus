@@ -18,6 +18,7 @@
  */
 #include <stdio.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "passphrase.h"
 #include "quit.h"
