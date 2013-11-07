@@ -137,6 +137,15 @@ int main(int argc, char** argv)
     }
   
   
+  /* Wipe the passphrase from the memory */
+  if (skip_auth == 0)
+    {
+      long i;
+      for (i = 0; *(passphrase + i); i++)
+	*(passphrase + i) = 0;
+    }
+  
+  
   /* Reset terminal settings */
   reenable_echo();
   
