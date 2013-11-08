@@ -106,6 +106,15 @@ int main(int argc, char** argv)
   }
   
   
+  /* Change that a username has been specified */
+  if (username == 0)
+    {
+      printf("%s: no username specified\n", *argv);
+      reenable_echo();
+      return 2;
+    }
+  
+  
   /* Print ant we want a passphrase, if -f has not been used */
   if (skip_auth == 0)
     {
