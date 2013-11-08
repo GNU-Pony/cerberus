@@ -145,6 +145,8 @@ int main(int argc, char** argv)
       printf("\n");
     }
   
+  /* Passphrase entered, turn off timeout */
+  alarm(0);
   
   /* Wipe the passphrase from the memory */
   if (skip_auth == 0)
