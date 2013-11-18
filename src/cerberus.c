@@ -33,6 +33,8 @@ int main(int argc, char** argv)
   char* passphrase = NULL;
   char preserve_env = 0;
   char skip_auth = 0;
+  struct passwd* entry;
+  
   
   /* Disable echoing */
   disable_echo();
@@ -100,7 +102,6 @@ int main(int argc, char** argv)
   if (username == 0)
     {
       printf("%s: no username specified\n", *argv);
-      reenable_echo();
       sleep(ERROR_SLEEP);
       return 2;
     }
@@ -130,6 +131,15 @@ int main(int argc, char** argv)
   
   
   /* Get user information */
+  if ((entry = getpwnam(username)) == NULL)
+    {
+      if (errno)
+	perror("getpwnam");
+      else
+	printf("User does not exist\n");
+      sleep(ERROR_SLEEP);
+      return 1;
+    }
   
   
   /* Get the passphrase, if -f has not been used */
@@ -154,6 +164,13 @@ int main(int argc, char** argv)
   
   /* Reset terminal settings */
   reenable_echo();
+  
+  
+  /* TODO login */
+  
+  
+  /* Reset terminal ownership */
+  chown_tty(0, 0, 0);
   
   return 0;
 }

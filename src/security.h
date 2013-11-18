@@ -24,8 +24,26 @@
 #include <signal.h>
 
 
+#ifndef TTY_PERM
+#define TTY_PERM  0600
+#endif
+
+#ifndef FAILURE_SLEEP
+#define FAILURE_SLEEP  5
+#endif
+
+
 /**
  * Secure the TTY from spying
  */
 void secure_tty(void);
+
+/**
+ * Set ownership and mode of the TTY
+ * 
+ * @param  owner      The owner
+ * @param  group      The group
+ * @param  with_fail  Abort on failure
+ */
+void chown_tty(int owner, int group, int with_fail);
 

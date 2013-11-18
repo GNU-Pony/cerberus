@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pwd.h>
+#include <errno.h>
 
 #include "passphrase.h"
 #include "quit.h"

@@ -19,36 +19,26 @@
 #include "security.h"
 
 
-#ifndef TTY_PERM
-#define TTY_PERM  0600
-#endif
-
-#ifndef FAILURE_SLEEP
-#define FAILURE_SLEEP  5
-#endif
-
-
-#define fail(FUNC)  ({ perror(#FUNC); sleep(FAILURE_SLEEP); _exit(1); })
-
+static inline void fail(char* str)
+{
+  perror(str);
+  sleep(FAILURE_SLEEP);
+  _exit(1);
+}
 
 
 /**
  * Secure the TTY from spying
  */
-void secure_tty(void) /* TODO /dev/vcs[a][0-9]+ */
+void secure_tty(void)
 {
   struct termios tty;
   struct termios saved_tty;
   char* tty_device;
   int fd, i;
   
-  /* Take owner ship of this TTY */
-  if (fchown(STDIN_FILENO, 0, 0))
-    fail(fchown);
-  
-  /* Restrict others from using this TTY */
-  if (fchmod(STDIN_FILENO, TTY_PERM))
-    fail(fchmod);
+  /* Set ownership of this TTY to root:root */
+  chown_tty(0, 0, 1);
   
   /* Get TTY name for last part of this functions */
   tty_device = ttyname(STDIN_FILENO);
@@ -68,7 +58,7 @@ void secure_tty(void) /* TODO /dev/vcs[a][0-9]+ */
   /* Restore terminal and TTY modes */
   fd = open(tty_device, O_RDWR | O_NONBLOCK);
   if (fd == -1)
-    fail(open);
+    fail("open");
   fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
   for (i = 0; i < fd; i++)
     close(i);
@@ -78,5 +68,57 @@ void secure_tty(void) /* TODO /dev/vcs[a][0-9]+ */
   if (fd > 2)
     close(fd);
   tcgetattr(STDIN_FILENO, &saved_tty);
+}
+
+
+/**
+ * Set ownership and mode of the TTY
+ * 
+ * @param  owner      The owner
+ * @param  group      The group
+ * @param  with_fail  Abort on failure
+ */
+void chown_tty(int owner, int group, int with_fail) 
+{
+  struct vt_stat vtstat;
+  
+  /* Set ownership of this TTY */
+  if (fchown(STDIN_FILENO, owner, group) && with_fail)
+    fail("fchown");
+  
+  /* Restrict others from using this TTY */
+  if (fchmod(STDIN_FILENO, TTY_PERM) && with_fail)
+    fail("fchmod");
+  
+  /* Also do the above for /dev/vcs[a][0-9]+ */
+  if (ioctl(STDIN_FILENO, VT_GETSTATE, &vtstat) == 0)
+    {
+      int n = vtstat.v_active;
+      char vcs[16];
+      char vcsa[16];
+      
+      vcs += 16;
+      vcsa += 16;
+      
+      if (n)
+	{
+	  *--vcs = *--vcsa = 0;
+	  while (n)
+	    {
+	      *--vcs = *--vcsa = (n % 10) + '0';
+	      n /= 10;
+	    }
+	  
+	  vcs -= 8;
+	  vcsa -= 9;
+	  strcpy(vcs,  "/dev/vcs");
+	  strcpy(vcsa, "/dev/vcsa");
+	  
+	  if (fchown(vcs,  owner, group) && with_fail)  fail("chown");
+	  if (fchown(vcsa, owner, group) && with_fail)  fail("chown");
+	  if (fchmod(vcs,  TTY_PERM) && with_fail)  fail("chmod");
+	  if (fchmod(vcsa, TTY_PERM) && with_fail)  fail("chmod");
+	}
+    }
 }
 
