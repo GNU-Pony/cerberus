@@ -23,6 +23,13 @@
 
 
 /**
+ * Set the user gid and uid
+ * 
+ * @param  entry  The user entry in the password file
+ */
+void set_user(struct passwd* entry);
+
+/**
  * Change directory to the user's home directory
  * 
  * @param  entry  The user entry in the password file

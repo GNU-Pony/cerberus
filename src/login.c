@@ -33,6 +33,27 @@ extern char** environ;
 
 
 /**
+ * Set the user gid and uid
+ * 
+ * @param  entry  The user entry in the password file
+ */
+void set_user(struct passwd* entry)
+{
+  if (setgid(entry->pw_gid) && entry->pw_gid)
+    {
+      perror("setgid");
+      _exit(1);
+    }
+  
+  if (setuid(entry->pw_uid) && entry->pw_uid)
+    {
+      perror("setuid");
+      _exit(1);
+    }
+}
+
+
+/**
  * Change directory to the user's home directory
  * 
  * @param  entry  The user entry in the password file

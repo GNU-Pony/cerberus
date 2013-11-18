@@ -18,6 +18,8 @@
  */
 #include "cerberus.h"
 
+/* TODO use log */
+
 
 /**
  * Mane method
@@ -177,7 +179,10 @@ int main(int argc, char** argv)
   reenable_echo();
   
   
-  /* TODO login */
+  /* Login */
+  /* TODO verify that user is enabled */
+  set_user(entry);
+  /* TODO set supplemental groups */
   chdir_home(entry);
   ensure_shell(entry);
   set_environ(entry, preserve_env);
