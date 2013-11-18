@@ -16,16 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdio.h>
-#include <unistd.h>
-
-#include "passphrase.h"
-
-
-/* Number of seconds to sleep on error, so the user has time to read the error message */
-#ifndef ERROR_SLEEP
-#define ERROR_SLEEP  2
-#endif
+#ifndef __QUIT_H__
+#define __QUIT_H__
 
 
 /**
@@ -41,4 +33,7 @@ void timeout_quit(int signal);
  * @param  signal  The signal the program received
  */
 void user_quit(int signal);
+
+
+#endif
 

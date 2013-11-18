@@ -16,6 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <unistd.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <termios.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stropts.h>
+#if defined(OWN_VCSA) || defined(OWN_VCS)
+#include <string.h>
+#include <linux/vt.h>
+#endif
+
+#include "config.h"
+
 #include "security.h"
 
 
@@ -80,7 +94,7 @@ void secure_tty(gid_t group)
  * @param  group      The group, -1 for unchanged
  * @param  with_fail  Abort on failure
  */
-void chown_tty(uid_t owner, gid_t group, int with_fail) 
+void chown_tty(uid_t owner, gid_t group, char with_fail) 
 {
   #if defined(OWN_VCSA) || defined(OWN_VCS)
   struct vt_stat vtstat;

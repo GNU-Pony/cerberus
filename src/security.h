@@ -16,24 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <unistd.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <termios.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <string.h>
-#include <stropts.h>
-#include <linux/vt.h>
+#ifndef __SECURITY_H__
+#define __SECURITY_H__
 
-
-#ifndef TTY_PERM
-#define TTY_PERM  0600
-#endif
-
-#ifndef FAILURE_SLEEP
-#define FAILURE_SLEEP  5
-#endif
+#include <sys/types.h>
 
 
 /**
@@ -50,5 +36,8 @@ void secure_tty(gid_t group);
  * @param  group      The group, -1 for unchanged
  * @param  with_fail  Abort on failure
  */
-void chown_tty(uid_t owner, gid_t group, int with_fail);
+void chown_tty(uid_t owner, gid_t group, char with_fail);
+
+
+#endif
 

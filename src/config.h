@@ -16,26 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __PASSPHRASE_H__
-#define __PASSPHRASE_H__
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
 
 
 /**
- * Reads the passphrase from stdin
- * 
- * @return  The passphrase, should be `free`:ed
+ * Mode for TTY devices
  */
-char* get_passphrase(void);
+#ifndef TTY_PERM
+#define TTY_PERM  0600
+#endif
 
 /**
- * Disable echoing and do anything else to the terminal settnings `get_passphrase` requires
+ * Number of seconds to sleep on login failure
  */
-void disable_echo(void);
+#ifndef FAILURE_SLEEP
+#define FAILURE_SLEEP  5
+#endif
 
 /**
- * Undo the actions of `disable_echo`
+ * Number of seconds to sleep on error,
+ * so the user has time to read the error message
  */
-void reenable_echo(void);
+#ifndef ERROR_SLEEP
+#define ERROR_SLEEP  2
+#endif
+
+/**
+ * Number of seconds before timeout when waiting for a passphrase
+ */
+#ifndef TIMEOUT_SECONDS
+#define TIMEOUT_SECONDS  60
+#endif
 
 
 #endif

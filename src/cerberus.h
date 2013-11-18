@@ -28,11 +28,8 @@
 
 #include "passphrase.h"
 #include "quit.h"
+#include "login.h"
 #include "security.h"
+#include "login.h"
 
-
-/* The number of seconds before the program times out */
-#ifndef TIMEOUT_SECONDS
-#define TIMEOUT_SECONDS  60
-#endif
 

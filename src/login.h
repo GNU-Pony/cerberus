@@ -16,26 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __PASSPHRASE_H__
-#define __PASSPHRASE_H__
+#ifndef __LOGIN_H__
+#define __LOGIN_H__
+
+#include <pwd.h>
 
 
 /**
- * Reads the passphrase from stdin
+ * Change directory to the user's home directory
  * 
- * @return  The passphrase, should be `free`:ed
+ * @param  entry  The user entry in the password file
  */
-char* get_passphrase(void);
+void chdir_home(struct passwd* entry);
 
 /**
- * Disable echoing and do anything else to the terminal settnings `get_passphrase` requires
+ * Make sure the shell to use is definied
+ * 
+ * @param  entry  The user entry in the password file
  */
-void disable_echo(void);
+void ensure_shell(struct passwd* entry);
 
 /**
- * Undo the actions of `disable_echo`
+ * Set environment variables
+ * 
+ * @param  entry         The user entry in the password file
+ * @param  preserve_env  Whether to preserve the environment
  */
-void reenable_echo(void);
+void set_environ(struct passwd* entry, char preserve_env);
 
 
 #endif

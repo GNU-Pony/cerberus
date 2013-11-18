@@ -16,6 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <stdlib.h>
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include "config.h"
+
 #include "passphrase.h"
 
 
@@ -70,7 +77,7 @@ char* get_passphrase(void)
 /**
  * Disable echoing and do anything else to the terminal settnings `get_passphrase` requires
  */
-void disable_echo()
+void disable_echo(void)
 {
   struct termios stty;
   
@@ -84,7 +91,7 @@ void disable_echo()
 /**
  * Undo the actions of `disable_echo`
  */
-void reenable_echo()
+void reenable_echo(void)
 {
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &saved_stty);
 }

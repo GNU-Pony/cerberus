@@ -28,7 +28,7 @@ VCS_LEN = $(shell vcs="$(VCS)" ; echo "$${$(H)vcs}")
 VCSA_LEN = $(shell vcsa="$(VCSA)" ; echo "$${$(H)vcsa}")
 VCS_VCSA_LEN = $(shell (echo $(VCS_LEN) ; echo $(VCSA_LEN)) | sort -n | tail -n 1)
 
-STR_DEFS = TTY_GROUP DEFAULT_HOME DEFAULT_SHELL DEFAULT_TERM PATH PATH_ROOT
+STR_DEFS = TTY_GROUP DEFAULT_HOME DEFAULT_SHELL DEFAULT_TERM PATH PATH_ROOT VCS VCSA
 INT_DEFS = VCS_LEN VCSA_LEN VCS_VCSA_LEN
 
 STR_CPPFLAGS = $(foreach D, $(STR_DEFS), -D'$(D)="$($(D))"')
@@ -42,7 +42,7 @@ CFLAGS = -std=gnu99 -Wall -Wextra
 CC_FLAGS = $(CPPFLAGS) $(CFLAGS) $(OPTIMISE)
 LD_FLAGS = $(LDFLAGS) $(CFLAGS) $(OPTIMISE)
 
-SRC = cerberus passphrase quit security
+SRC = cerberus passphrase quit security login
 OBJ = $(foreach S, $(SRC), obj/$(S).o)
 
 
@@ -55,7 +55,7 @@ bin/cerberus: $(OBJ)
 	$(CC) $(LD_FLAGS) -o "$@" $^
 
 
-obj/%.o: src/%.c src/%.h
+obj/%.o: src/%.c src/%.h src/config.h
 	@mkdir -p obj
 	$(CC) $(CC_FLAGS) -o "$@" -c "$<"
 
