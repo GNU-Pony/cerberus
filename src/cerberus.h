@@ -19,8 +19,15 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
+#include <pwd.h>
 
 #include "passphrase.h"
 #include "quit.h"
 #include "security.h"
+
+
+/* The number of seconds before the program times out */
+#ifndef TIMEOUT_SECONDS
+#define TIMEOUT_SECONDS  60
+#endif
 

@@ -22,13 +22,18 @@
 #include "passphrase.h"
 
 
+/* Number of seconds to sleep on error, so the user has time to read the error message */
+#ifndef ERROR_SLEEP
+#define ERROR_SLEEP  2
+#endif
+
+
 /**
  * Quit function for timeout
  * 
  * @param  signal  The signal the program received
  */
 void timeout_quit(int signal);
-
 
 /**
  * Quit function for user aborts

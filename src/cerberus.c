@@ -19,13 +19,6 @@
 #include "cerberus.h"
 
 
-/* The number of seconds before the program times out */
-#ifndef TIMEOUT_SECONDS
-#define TIMEOUT_SECONDS  60
-#endif
-
-
-
 /**
  * Mane method
  * 
@@ -91,7 +84,7 @@ int main(int argc, char** argv)
 		break;
 	      }
 	    else
-	      fprintf(stderr, "%s: unrecognised options: -%c\n", *argv, c);
+	      printf("%s: unrecognised options: -%c\n", *argv, c);
 	else if (hostname_on_next)
 	  {
 	    hostname = arg;
@@ -108,6 +101,7 @@ int main(int argc, char** argv)
     {
       printf("%s: no username specified\n", *argv);
       reenable_echo();
+      sleep(ERROR_SLEEP);
       return 2;
     }
   
@@ -133,6 +127,9 @@ int main(int argc, char** argv)
   siginterrupt(SIGQUIT, 1);
   siginterrupt(SIGINT, 1);
   alarm(TIMEOUT_SECONDS);
+  
+  
+  /* Get user information */
   
   
   /* Get the passphrase, if -f has not been used */
