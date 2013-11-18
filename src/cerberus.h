@@ -16,6 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef __CERBERUS_H__
+#define __CERBERUS_H__
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -26,10 +30,19 @@
 #include <grp.h>
 #endif
 
+#include "config.h"
+
 #include "passphrase.h"
 #include "quit.h"
 #include "login.h"
 #include "security.h"
 #include "login.h"
 
+
+#ifndef USE_TTY_GROUP
+#define tty_group  0
+#endif
+
+
+#endif
 

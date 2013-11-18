@@ -19,11 +19,6 @@
 #include "cerberus.h"
 
 
-#ifndef USE_TTY_GROUP
-#define tty_group  0
-#endif
-
-
 /**
  * Mane method
  * 
