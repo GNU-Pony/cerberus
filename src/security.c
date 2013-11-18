@@ -113,13 +113,13 @@ void chown_tty(uid_t owner, gid_t group, char with_fail)
     if (ioctl(STDIN_FILENO, VT_GETSTATE, &vtstat) == 0)
       {
 	int n = vtstat.v_active;
-	char _vcs[VCS_VCSA_LEN];
-	char _vcsa[VCS_VCSA_LEN];
+	char _vcs[VCS_VCSA_LEN + 6];
+	char _vcsa[VCS_VCSA_LEN + 6];
 	
 	char* vcs = _vcs;
 	char* vcsa = _vcsa;
-	vcs += VCS_VCSA_LEN;
-	vcsa += VCS_VCSA_LEN;
+	vcs += VCS_VCSA_LEN + 6;
+	vcsa += VCS_VCSA_LEN + 6;
 	
 	if (n)
 	  {
