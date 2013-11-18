@@ -38,7 +38,7 @@ void secure_tty(void)
   int fd, i;
   
   /* Set ownership of this TTY to root:root */
-  chown_tty(0, 0, 1);
+  chown_tty(0, -1, 1);
   
   /* Get TTY name for last part of this functions */
   tty_device = ttyname(STDIN_FILENO);
@@ -74,11 +74,11 @@ void secure_tty(void)
 /**
  * Set ownership and mode of the TTY
  * 
- * @param  owner      The owner
- * @param  group      The group
+ * @param  owner      The owner, -1 for unchanged
+ * @param  group      The group, -1 for unchanged
  * @param  with_fail  Abort on failure
  */
-void chown_tty(int owner, int group, int with_fail) 
+void chown_tty(uid_t owner, gid_t group, int with_fail) 
 {
   struct vt_stat vtstat;
   

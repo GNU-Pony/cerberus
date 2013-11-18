@@ -41,9 +41,9 @@ void secure_tty(void);
 /**
  * Set ownership and mode of the TTY
  * 
- * @param  owner      The owner
- * @param  group      The group
+ * @param  owner      The owner, -1 for unchanged
+ * @param  group      The group, -1 for unchanged
  * @param  with_fail  Abort on failure
  */
-void chown_tty(int owner, int group, int with_fail);
+void chown_tty(uid_t owner, gid_t group, int with_fail);
 

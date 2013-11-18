@@ -169,8 +169,8 @@ int main(int argc, char** argv)
   /* TODO login */
   
   
-  /* Reset terminal ownership */
-  chown_tty(0, 0, 0);
+  /* Reset terminal ownership and mode */
+  chown_tty(0, -1, 0);
   
   return 0;
 }
