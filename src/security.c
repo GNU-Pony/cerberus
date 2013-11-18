@@ -29,8 +29,10 @@ static inline void fail(char* str)
 
 /**
  * Secure the TTY from spying
+ * 
+ * @param  group  The group, -1 for unchanged
  */
-void secure_tty(void)
+void secure_tty(gid_t group)
 {
   struct termios tty;
   struct termios saved_tty;
@@ -38,7 +40,7 @@ void secure_tty(void)
   int fd, i;
   
   /* Set ownership of this TTY to root:root */
-  chown_tty(0, -1, 1);
+  chown_tty(0, group, 1);
   
   /* Get TTY name for last part of this functions */
   tty_device = ttyname(STDIN_FILENO);
@@ -80,7 +82,9 @@ void secure_tty(void)
  */
 void chown_tty(uid_t owner, gid_t group, int with_fail) 
 {
+  #if defined(OWN_VCSA) || defined(OWN_VCS)
   struct vt_stat vtstat;
+  #endif
   
   /* Set ownership of this TTY */
   if (fchown(STDIN_FILENO, owner, group) && with_fail)

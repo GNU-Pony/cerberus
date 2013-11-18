@@ -3,6 +3,11 @@ TTY_PERM  (default: 0600, type: int)
    Mode for TTY devices
 
 
+USE_TTY_GROUP (default: undefinied, type: #ifdef)
+
+   Use the group tty for group ownership of TTY devices
+
+
 FAILURE_SLEEP  (default: 5, type: float)
 
    Number of seconds to sleep on login failure.

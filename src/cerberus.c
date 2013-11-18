@@ -19,6 +19,11 @@
 #include "cerberus.h"
 
 
+#ifndef USE_TTY_GROUP
+#define tty_group  0
+#endif
+
+
 /**
  * Mane method
  * 
@@ -33,6 +38,10 @@ int main(int argc, char** argv)
   char* passphrase = NULL;
   char preserve_env = 0;
   char skip_auth = 0;
+  #ifdef USE_TTY_GROUP
+  gid_t tty_group = 0;
+  struct group* group;
+  #endif
   struct passwd* entry;
   
   
@@ -117,7 +126,11 @@ int main(int argc, char** argv)
   
   
   /* Make sure nopony is spying */
-  secure_tty();
+  #ifdef USE_TTY_GROUP
+  if ((group = getgrnam("tty")))
+    tty_group = group->gr_gid;
+  #endif
+  secure_tty(tty_group);
   
   
   /* Set up clean quiting and time out */
@@ -170,7 +183,7 @@ int main(int argc, char** argv)
   
   
   /* Reset terminal ownership and mode */
-  chown_tty(0, -1, 0);
+  chown_tty(0, tty_group, 0);
   
   return 0;
 }

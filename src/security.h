@@ -38,8 +38,10 @@
 
 /**
  * Secure the TTY from spying
+ * 
+ * @param  group  The group, -1 for unchanged
  */
-void secure_tty(void);
+void secure_tty(gid_t group);
 
 /**
  * Set ownership and mode of the TTY

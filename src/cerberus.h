@@ -21,6 +21,9 @@
 #include <signal.h>
 #include <pwd.h>
 #include <errno.h>
+#ifdef USE_TTY_GROUP
+#include <grp.h>
+#endif
 
 #include "passphrase.h"
 #include "quit.h"
