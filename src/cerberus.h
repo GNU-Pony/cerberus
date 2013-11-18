@@ -24,8 +24,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
 #include <pwd.h>
 #include <errno.h>
+#include <sys/wait.h>
 #ifdef USE_TTY_GROUP
 #include <grp.h>
 #endif
