@@ -22,6 +22,9 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <string.h>
+#include <stropts.h>
+#include <linux/vt.h>
 
 
 #ifndef TTY_PERM
