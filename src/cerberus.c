@@ -25,9 +25,6 @@
 #endif
 
 
-/* Free if declared */
-#define xfree(VAR)  ({ if (VAR)  free(VAR); })
-
 
 /**
  * Mane method
@@ -51,7 +48,7 @@ int main(int argc, char** argv)
      begins entering the passphrase directly after the username. */
   
   
-  /* Set proccess group ID */
+  /* Set process group ID */
   setpgrp();
   
   
@@ -148,19 +145,19 @@ int main(int argc, char** argv)
   /* Passphrase entered, turn off timeout */
   alarm(0);
   
-  /* Wipe the passphrase from the memory */
+  /* Wipe and free the passphrase from the memory */
   if (skip_auth == 0)
     {
       long i;
       for (i = 0; *(passphrase + i); i++)
 	*(passphrase + i) = 0;
+      free(passphrase);
     }
   
   
   /* Reset terminal settings */
   reenable_echo();
   
-  xfree(passphrase);
   return 0;
 }
 
