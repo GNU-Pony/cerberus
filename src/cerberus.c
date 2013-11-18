@@ -121,6 +121,10 @@ int main(int argc, char** argv)
   /* Done early to make to program look like it is even faster than it is */
   
   
+  /* Make sure nopony is spying */
+  secure_tty();
+  
+  
   /* Set up clean quiting and time out */
   signal(SIGALRM, timeout_quit);
   signal(SIGQUIT, user_quit);
@@ -129,10 +133,6 @@ int main(int argc, char** argv)
   siginterrupt(SIGQUIT, 1);
   siginterrupt(SIGINT, 1);
   alarm(TIMEOUT_SECONDS);
-  
-  
-  /* Make sure nopony is spying */
-  secure_tty();
   
   
   /* Get the passphrase, if -f has not been used */
