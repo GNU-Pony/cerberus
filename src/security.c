@@ -99,13 +99,13 @@ void chown_tty(uid_t owner, gid_t group, int with_fail)
     if (ioctl(STDIN_FILENO, VT_GETSTATE, &vtstat) == 0)
       {
 	int n = vtstat.v_active;
-	char _vcs[16];
-	char _vcsa[16];
+	char _vcs[VCS_VCSA_LEN];
+	char _vcsa[VCS_VCSA_LEN];
 	
 	char* vcs = _vcs;
 	char* vcsa = _vcsa;
-	vcs += 16;
-	vcsa += 16;
+	vcs += VCS_VCSA_LEN;
+	vcsa += VCS_VCSA_LEN;
 	
 	if (n)
 	  {
@@ -116,18 +116,18 @@ void chown_tty(uid_t owner, gid_t group, int with_fail)
 		n /= 10;
 	      }
 	    
-	    vcs -= 8;
-	    vcsa -= 9;
-	    strcpy(vcs,  "/dev/vcs");
-	    strcpy(vcsa, "/dev/vcsa");
+	    vcs -= VCS_LEN;
+	    vcsa -= VCSA_LEN;
+	    strcpy(vcs,  VCS);
+	    strcpy(vcsa, VCSA);
 	    
 	    #ifdef OWN_VCS
-	      if (chown(vcs,  owner, group) && with_fail)  fail("chown");
-	      if (chmod(vcs,  TTY_PERM) && with_fail)  fail("chmod");
+	      if (chown(vcs, owner, group) && with_fail)  fail("chown");
+	      if (chmod(vcs, TTY_PERM)     && with_fail)  fail("chmod");
 	    #endif
 	    #ifdef OWN_VCSA
 	      if (chown(vcsa, owner, group) && with_fail)  fail("chown");
-	      if (chmod(vcsa, TTY_PERM) && with_fail)  fail("chmod");
+	      if (chmod(vcsa, TTY_PERM)     && with_fail)  fail("chmod");
 	    #endif
 	  }
       }

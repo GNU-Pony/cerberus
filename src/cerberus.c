@@ -132,7 +132,7 @@ int main(int argc, char** argv)
   
   /* Make sure nopony is spying */
   #ifdef USE_TTY_GROUP
-  if ((group = getgrnam("tty")))
+  if ((group = getgrnam(TTY_GROUP)))
     tty_group = group->gr_gid;
   #endif
   secure_tty(tty_group);
@@ -193,18 +193,18 @@ int main(int argc, char** argv)
   if (chdir(entry->pw_dir))
     {
       perror("chdir");
-      if (chdir("/"))
+      if (chdir(DEFAULT_HOME))
 	{
 	  perror("chdir");
 	  sleep(ERROR_SLEEP);
 	  return 1;
 	}
-      entry->pw_dir = "/";
+      entry->pw_dir = DEFAULT_HOME;
     }
   
   /* Make sure the shell to use is definied */
   if ((entry->pw_shell && *(entry->pw_shell)) == 0)
-    entry->pw_shell = "/bin/sh";
+    entry->pw_shell = DEFAULT_SHELL;
   
   /* Set environment variables */
   {
@@ -242,7 +242,7 @@ int main(int argc, char** argv)
     setenv("USER", entry->pw_name, 1);
     setenv("LOGUSER", entry->pw_name, 1);
     setenv("SHELL", entry->pw_shell, 1);
-    setenv("TERM", term ?: "dumb", 1);
+    setenv("TERM", term ?: DEFAULT_TERM, 1);
     if (term)
       free(term);
     
