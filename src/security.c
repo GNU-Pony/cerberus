@@ -91,36 +91,42 @@ void chown_tty(uid_t owner, gid_t group, int with_fail)
     fail("fchmod");
   
   /* Also do the above for /dev/vcs[a][0-9]+ */
-  if (ioctl(STDIN_FILENO, VT_GETSTATE, &vtstat) == 0)
-    {
-      int n = vtstat.v_active;
-      char _vcs[16];
-      char _vcsa[16];
-      
-      char* vcs = _vcs;
-      char* vcsa = _vcsa;
-      vcs += 16;
-      vcsa += 16;
-      
-      if (n)
-	{
-	  *--vcs = *--vcsa = 0;
-	  while (n)
-	    {
-	      *--vcs = *--vcsa = (n % 10) + '0';
-	      n /= 10;
-	    }
-	  
-	  vcs -= 8;
-	  vcsa -= 9;
-	  strcpy(vcs,  "/dev/vcs");
-	  strcpy(vcsa, "/dev/vcsa");
-	  
-	  if (chown(vcs,  owner, group) && with_fail)  fail("chown");
-	  if (chown(vcsa, owner, group) && with_fail)  fail("chown");
-	  if (chmod(vcs,  TTY_PERM) && with_fail)  fail("chmod");
-	  if (chmod(vcsa, TTY_PERM) && with_fail)  fail("chmod");
-	}
-    }
+  #if defined(OWN_VCSA) || defined(OWN_VCS)
+    if (ioctl(STDIN_FILENO, VT_GETSTATE, &vtstat) == 0)
+      {
+	int n = vtstat.v_active;
+	char _vcs[16];
+	char _vcsa[16];
+	
+	char* vcs = _vcs;
+	char* vcsa = _vcsa;
+	vcs += 16;
+	vcsa += 16;
+	
+	if (n)
+	  {
+	    *--vcs = *--vcsa = 0;
+	    while (n)
+	      {
+		*--vcs = *--vcsa = (n % 10) + '0';
+		n /= 10;
+	      }
+	    
+	    vcs -= 8;
+	    vcsa -= 9;
+	    strcpy(vcs,  "/dev/vcs");
+	    strcpy(vcsa, "/dev/vcsa");
+	    
+	    #ifdef OWN_VCS
+	      if (chown(vcs,  owner, group) && with_fail)  fail("chown");
+	      if (chmod(vcs,  TTY_PERM) && with_fail)  fail("chmod");
+	    #endif
+	    #ifdef OWN_VCSA
+	      if (chown(vcsa, owner, group) && with_fail)  fail("chown");
+	      if (chmod(vcsa, TTY_PERM) && with_fail)  fail("chmod");
+	    #endif
+	  }
+      }
+  #endif
 }
 

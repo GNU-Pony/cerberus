@@ -1,0 +1,29 @@
+TTY_PERM  (default: 0600, type: int)
+
+   Mode for TTY devices
+
+
+FAILURE_SLEEP  (default: 5, type: float)
+
+   Number of seconds to sleep on login failure.
+
+
+ERROR_SLEEP  (default: 2, type: float)
+
+   Number of seconds to sleep on error.
+
+
+TIMEOUT_SECONDS  (default: 60, type: int)
+
+   Number of seconds before timeout when waiting for a passphrase.
+
+
+OWN_VCSA (default: undefinied, type: #ifdef)
+
+   Take ownership of and change mode of VCSA device 
+
+
+OWN_VCS (default: undefinied, type: #ifdef)
+
+   Take ownership of and change mode of VCS device 
+
