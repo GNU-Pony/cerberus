@@ -243,10 +243,10 @@ int main(int argc, char** argv)
     setenv("LOGUSER", entry->pw_name, 1);
     setenv("SHELL", entry->pw_shell, 1);
     setenv("TERM", term ?: DEFAULT_TERM, 1);
+    setenv("PATH", entry->pw_uid ? PATH : PATH_ROOT, 1);
+    
     if (term)
       free(term);
-    
-    /* TODO set PATH */
   }
   
   

@@ -1,8 +1,18 @@
+USR_PREFIX = /usr
+LOCAL_PREFIX = $(USR_PREFIX)/local
 BIN = /bin
+SBIN = /sbin
 DEV = /dev
 
 EXTRA_CPP_FLAGS = 
-# -DOWN_VCS -DOWN_VCSA -DUSE_TTY_GROUP
+# see configurable-definitions
+
+_LB = $(LOCAL_PREFIX)$(BIN)
+_UB = $(USR_PREFIX)$(BIN)
+_SB = $(BIN)
+_LS = $(LOCAL_PREFIX)$(SBIN)
+_US = $(USR_PREFIX)$(SBIN)
+_SS = $(SBIN)
 
 TTY_GROUP = tty
 DEFAULT_HOME = /
@@ -10,17 +20,22 @@ DEFAULT_SHELL = $(BIN)/sh
 DEFAULT_TERM = dumb
 VCS = $(DEV)/vcs
 VCSA = $(DEV)/vcsa
+PATH = $(_LB):$(_UB):$(_SB)
+PATH_ROOT = $(_LS):$(_LB):$(_US):$(_UB):$(_SS):$(_SB)
 
 H = \#
 VCS_LEN = $(shell vcs="$(VCS)" ; echo "$${$(H)vcs}")
 VCSA_LEN = $(shell vcsa="$(VCSA)" ; echo "$${$(H)vcsa}")
 VCS_VCSA_LEN = $(shell (echo $(VCS_LEN) ; echo $(VCSA_LEN)) | sort -n | tail -n 1)
 
-STR_DEFS = TTY_GROUP DEFAULT_HOME DEFAULT_SHELL DEFAULT_TERM
+STR_DEFS = TTY_GROUP DEFAULT_HOME DEFAULT_SHELL DEFAULT_TERM PATH PATH_ROOT
 INT_DEFS = VCS_LEN VCSA_LEN VCS_VCSA_LEN
 
+STR_CPPFLAGS = $(foreach D, $(STR_DEFS), -D'$(D)="$($(D))"')
+INT_CPPFLAGS = $(foreach D, $(INT_DEFS), -D'$(D)=$($(D))')
+
 OPTIMISE = -Os
-CPPFLAGS = $(EXTRA_CPP_FLAGS) $(foreach D, $(INT_DEFS), -D'$(D)=$($(D))') $(foreach D, $(STR_DEFS), -D'$(D)="$($(D))"')
+CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(INT_CPPFLAGS)
 LDFLAGS = 
 CFLAGS = -std=gnu99 -Wall -Wextra
 
