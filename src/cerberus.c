@@ -129,6 +129,9 @@ int main(int argc, char** argv)
   #endif
   secure_tty(tty_group);
   
+  /* Redisable echoing */
+  disable_echo();
+  
   
   /* Set up clean quiting and time out */
   signal(SIGALRM, timeout_quit);

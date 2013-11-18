@@ -46,10 +46,17 @@ char* get_passphrase(void)
      we will not do that under normal usecases, if we do, it
      okay to segfault on null derefencing and quit on that. */
   
-  char* rc = malloc(START_PASSPHRASE_LIMIT);
+  char* rc = malloc(START_PASSPHRASE_LIMIT * sizeof(char));
   long size = START_PASSPHRASE_LIMIT;
   long len = 0;
   int c;
+  
+  if (rc == NULL)
+    {
+      perror("malloc");
+      sleep(ERROR_SLEEP);
+      _exit(1);
+    }
   
   /* Read password until EOF or Enter, skip all ^0 as that
      is probably not a part of the passphrase (good luck typing
@@ -63,7 +70,12 @@ char* get_passphrase(void)
         {
 	  *(rc + len++) = c;
 	  if (len == size)
-	    rc = realloc(rc, size <<= 1L);
+	    if ((rc = realloc(rc, (size <<= 1L) * sizeof(char))) == NULL)
+	      {
+		perror("realloc");
+		sleep(ERROR_SLEEP);
+		_exit(1);
+	      }
 	}
     }
   
@@ -81,8 +93,8 @@ void disable_echo(void)
 {
   struct termios stty;
   
-  tcgetattr(STDIN_FILENO, &saved_stty);
-  stty = saved_stty;
+  tcgetattr(STDIN_FILENO, &stty);
+  saved_stty = stty;
   stty.c_lflag &= ~ECHO;
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &stty);
 }
