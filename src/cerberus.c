@@ -25,6 +25,11 @@
 
 
 /**
+ * The environment variables
+ */
+extern char** environ;
+
+/**
  * Mane method
  * 
  * @param   argc  The number of command line arguments
@@ -153,6 +158,7 @@ int main(int argc, char** argv)
       sleep(ERROR_SLEEP);
       return 1;
     }
+  username = entry->pw_name;
   
   
   /* Get the passphrase, if -f has not been used */
@@ -164,6 +170,8 @@ int main(int argc, char** argv)
   
   /* Passphrase entered, turn off timeout */
   alarm(0);
+  
+  /* TODO verify passphrase */
   
   /* Wipe and free the passphrase from the memory */
   if (skip_auth == 0)
@@ -180,6 +188,66 @@ int main(int argc, char** argv)
   
   
   /* TODO login */
+  
+  /* Change directory */
+  if (chdir(entry->pw_dir))
+    {
+      perror("chdir");
+      if (chdir("/"))
+	{
+	  perror("chdir");
+	  sleep(ERROR_SLEEP);
+	  return 1;
+	}
+      entry->pw_dir = "/";
+    }
+  
+  /* Make sure the shell to use is definied */
+  if ((entry->pw_shell && *(entry->pw_shell)) == 0)
+    entry->pw_shell = "/bin/sh";
+  
+  /* Set environment variables */
+  {
+    char* _term = getenv("TERM");
+    char* term = NULL;
+    if (_term)
+      {
+	int n = 0, i;
+	while (*(_term + n++))
+	  ;
+	term = malloc(n * sizeof(char));
+	if (term == NULL)
+	  {
+	    perror("malloc");
+	    sleep(ERROR_SLEEP);
+	    return 1;
+	  }
+	for (i = 0; i < n; i++)
+	  *(term + i) = *(_term + i);
+      }
+    
+    if (preserve_env == 0)
+      {
+	environ = malloc(sizeof(char*));
+	if (environ == NULL)
+	  {
+	    perror("malloc");
+	    sleep(ERROR_SLEEP);
+	    return 1;
+	  }
+	*environ = NULL;
+      }
+    
+    setenv("HOME", entry->pw_dir, 1);
+    setenv("USER", entry->pw_name, 1);
+    setenv("LOGUSER", entry->pw_name, 1);
+    setenv("SHELL", entry->pw_shell, 1);
+    setenv("TERM", term ?: "dumb", 1);
+    if (term)
+      free(term);
+    
+    /* TODO set PATH */
+  }
   
   
   /* Reset terminal ownership and mode */
