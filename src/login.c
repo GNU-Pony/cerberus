@@ -193,5 +193,8 @@ void exec_shell(struct passwd* entry)
   
   *(child_argv + child_argc) = NULL;
   execvp(*child_argv, child_argv + 1);
+  perror("execvp");
+  sleep(ERROR_SLEEP);
+  _exit(1);
 }
 

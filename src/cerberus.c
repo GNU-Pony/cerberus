@@ -44,6 +44,10 @@ int main(int argc, char** argv)
   
   do_login(argc, argv);
   
+  /* Ignore signals */
+  signal(SIGQUIT, SIG_IGN);
+  signal(SIGINT, SIG_IGN);
+  
   /* Wait for the login shell to exit  */
   waitpid(child_pid, &_status, 0);
   
@@ -220,6 +224,12 @@ void do_login(int argc, char** argv)
   set_environ(entry, preserve_env);
   
   
+  /* Stop signal handling */
+  signal(SIGALRM, SIG_DFL);
+  signal(SIGQUIT, SIG_DFL);
+  signal(SIGTSTP, SIG_IGN);
+  
+  
   child_pid = fork();
   /* vfork cannot be used as the child changes the user,
      the parent would not be able to chown the TTY */
@@ -227,10 +237,19 @@ void do_login(int argc, char** argv)
   if (child_pid == -1)
     {
       perror("fork");
+      sleep(ERROR_SLEEP);
       _exit(1);
     }
   else if (child_pid == 0)
     {
+      /* In case the shell does not do this */
+      setsid();
+      
+      /* Set controlling terminal */
+      if (ioctl(STDIN_FILENO, TIOCSCTTY, 1))
+	perror("TIOCSCTTY");
+      signal(SIGINT, SIG_DFL);
+      
       /* Partial login */
       /* TODO set supplemental groups */
       set_user(entry);

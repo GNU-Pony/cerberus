@@ -26,7 +26,10 @@
 #include <signal.h>
 #include <pwd.h>
 #include <errno.h>
+#include <stropts.h>
+#include <termios.h>
 #include <sys/wait.h>
+#include <sys/ioctl.h>
 #ifdef USE_TTY_GROUP
 #include <grp.h>
 #endif
