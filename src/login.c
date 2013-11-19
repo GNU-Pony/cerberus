@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "config.h"
 
@@ -133,5 +134,64 @@ void set_environ(struct passwd* entry, char preserve_env)
   
   if (term)
     free(term);
+}
+
+
+/**
+ * Replace the current image with the user's login shell
+ * 
+ * @param  entry  The user entry in the password file
+ */
+void exec_shell(struct passwd* entry)
+{
+  int child_argc = 0;
+  char** child_argv = malloc(5 * sizeof(char*));
+  long n = 0;
+  char* sh = entry->pw_shell;
+  char* login_sh;
+  
+  while (*(sh + n++))
+    ;
+  
+  login_sh = malloc((n + (strchr(sh, ' ') ? 5 : 1)) * sizeof(char));
+  if (login_sh == NULL)
+    {
+      perror("malloc");
+      sleep(ERROR_SLEEP);
+      _exit(1);
+    }
+  
+  if (strchr(sh, ' '))
+    {
+      login_sh += 5;
+      strcpy(login_sh, "exec ");
+      *(login_sh + n) = 0;
+      
+      *(child_argv + child_argc++) = DEFAULT_SHELL;
+      *(child_argv + child_argc++) = "-" DEFAULT_SH;
+      *(child_argv + child_argc++) = "-c";
+      *(child_argv + child_argc++) = login_sh - 5;
+    }
+  else
+    {
+      int i;
+      for (i = n - 1; i >= 0; i--)
+	if (*(sh + i) == '/')
+	  {
+	    i++;
+	    break;
+	  }
+      
+      login_sh = malloc((n + 1) * sizeof(char));
+      *login_sh++ = '-';
+      strcpy(login_sh, sh + i);
+      *(login_sh + n) = 0;
+      
+      *(child_argv + child_argc++) = sh;
+      *(child_argv + child_argc++) = login_sh - 1;
+    }
+  
+  *(child_argv + child_argc) = NULL;
+  execvp(*child_argv, child_argv + 1);
 }
 

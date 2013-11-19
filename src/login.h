@@ -51,6 +51,13 @@ void ensure_shell(struct passwd* entry);
  */
 void set_environ(struct passwd* entry, char preserve_env);
 
+/**
+ * Replace the current image with the user's login shell
+ * 
+ * @param  entry  The user entry in the password file
+ */
+void exec_shell(struct passwd* entry);
+
 
 #endif
 

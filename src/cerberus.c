@@ -40,6 +40,7 @@ int main(int argc, char** argv)
   struct group* group;
   #endif
   struct passwd* entry;
+  pid_t child_pid;
   
   
   /* Disable echoing */
@@ -190,75 +191,26 @@ int main(int argc, char** argv)
   set_environ(entry, preserve_env);
   
   {
-    pid_t pid = fork();
+    child_pid = fork();
     /* vfork cannot be used as the child changes the user,
        the parent would not be able to chown the TTY */
     
-    if (pid == -1)
+    if (child_pid == -1)
       {
 	perror("fork");
 	return 1;
       }
-    else if (pid == 0)
+    else if (child_pid == 0)
       {
-	int child_argc = 0;
-	char** child_argv = malloc(5 * sizeof(char*));
-	int n = 0;
-	char* sh = entry->pw_shell;
-	char* login_sh;
-        
 	/* Partial login */
 	/* TODO set supplemental groups */
 	set_user(entry);
-	
-	while (*(sh + n++))
-	  ;
-	
-	login_sh = malloc((n + (strchr(sh, ' ') ? 5 : 1)) * sizeof(char));
-	if (login_sh == NULL)
-	  {
-	    perror("malloc");
-	    sleep(ERROR_SLEEP);
-	    _exit(1);
-	  }
-	
-	if (strchr(sh, ' '))
-	  {
-	    login_sh += 5;
-	    strcpy(login_sh, "exec ");
-	    *(login_sh + n) = 0;
-	    
-	    *(child_argv + child_argc++) = DEFAULT_SHELL;
-	    *(child_argv + child_argc++) = "-" DEFAULT_SH;
-	    *(child_argv + child_argc++) = "-c";
-	    *(child_argv + child_argc++) = login_sh - 5;
-	  }
-	else
-	  {
-	    int i;
-	    for (i = n - 1; i >= 0; i--)
-	      if (*(sh + i) == '/')
-		{
-		  i++;
-		  break;
-		}
-	    
-	    login_sh = malloc((n + 1) * sizeof(char));
-	    *login_sh++ = '-';
-	    strcpy(login_sh, sh + i);
-	    *(login_sh + n) = 0;
-	    
-	    *(child_argv + child_argc++) = sh;
-	    *(child_argv + child_argc++) = login_sh - 1;
-	  }
-        
-	*(child_argv + child_argc) = NULL;
-        execvp(*child_argv, child_argv + 1);
+	exec_shell(entry);
       }
     else
       {
 	int _status;
-	waitpid(pid, &_status, 0);
+	waitpid(child_pid, &_status, 0);
 	
 	/* Reset terminal ownership and mode */
 	chown_tty(0, tty_group, 0);
