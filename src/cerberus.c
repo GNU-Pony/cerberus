@@ -21,6 +21,16 @@
 /* TODO use log */
 
 
+#ifdef USE_TTY_GROUP
+static gid_t tty_group = 0;
+#endif
+static struct passwd* entry;
+static pid_t child_pid;
+
+
+void do_login(int argc, char** argv);
+
+
 /**
  * Mane method
  * 
@@ -30,17 +40,36 @@
  */
 int main(int argc, char** argv)
 {
+  int _status;
+  
+  do_login(argc, argv);
+  
+  /* Wait for the login shell to exit  */
+  waitpid(child_pid, &_status, 0);
+  
+  /* Reset terminal ownership and mode */
+  chown_tty(0, tty_group, 0);
+  
+  return 0;
+}
+
+
+/**
+ * Do everything before the fork and do everything the exec fork
+ * 
+ * @param   argc  The number of command line arguments
+ * @param   argv  The command line arguments
+ */
+void do_login(int argc, char** argv)
+{
   char* username = NULL;
   char* hostname = NULL;
   char* passphrase = NULL;
   char preserve_env = 0;
   char skip_auth = 0;
   #ifdef USE_TTY_GROUP
-  static gid_t tty_group = 0;
   struct group* group;
   #endif
-  struct passwd* entry;
-  pid_t child_pid;
   
   
   /* Disable echoing */
@@ -110,7 +139,7 @@ int main(int argc, char** argv)
     {
       printf("%s: no username specified\n", *argv);
       sleep(ERROR_SLEEP);
-      return 2;
+      _exit(2);
     }
   
   
@@ -152,7 +181,7 @@ int main(int argc, char** argv)
       else
 	printf("User does not exist\n");
       sleep(ERROR_SLEEP);
-      return 1;
+      _exit(1);
     }
   username = entry->pw_name;
   
@@ -190,33 +219,22 @@ int main(int argc, char** argv)
   ensure_shell(entry);
   set_environ(entry, preserve_env);
   
-  {
-    child_pid = fork();
-    /* vfork cannot be used as the child changes the user,
-       the parent would not be able to chown the TTY */
-    
-    if (child_pid == -1)
-      {
-	perror("fork");
-	return 1;
-      }
-    else if (child_pid == 0)
-      {
-	/* Partial login */
-	/* TODO set supplemental groups */
-	set_user(entry);
-	exec_shell(entry);
-      }
-    else
-      {
-	int _status;
-	waitpid(child_pid, &_status, 0);
-	
-	/* Reset terminal ownership and mode */
-	chown_tty(0, tty_group, 0);
-      }
-  }
   
-  return 0;
+  child_pid = fork();
+  /* vfork cannot be used as the child changes the user,
+     the parent would not be able to chown the TTY */
+    
+  if (child_pid == -1)
+    {
+      perror("fork");
+      _exit(1);
+    }
+  else if (child_pid == 0)
+    {
+      /* Partial login */
+      /* TODO set supplemental groups */
+      set_user(entry);
+      exec_shell(entry);
+    }
 }
 
