@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   signal(SIGQUIT, SIG_IGN);
   signal(SIGINT, SIG_IGN);
   
-  /* Wait for the login shell to exit  */
+  /* Wait for the login shell to exit */
   waitpid(child_pid, &_status, 0);
   
   /* Reset terminal ownership and mode */
@@ -139,7 +139,7 @@ void do_login(int argc, char** argv)
   
   
   /* Change that a username has been specified */
-  if (username == 0)
+  if (username == NULL)
     {
       printf("%s: no username specified\n", *argv);
       sleep(ERROR_SLEEP);
@@ -233,37 +233,37 @@ void do_login(int argc, char** argv)
   child_pid = fork();
   /* vfork cannot be used as the child changes the user,
      the parent would not be able to chown the TTY */
-    
+  
   if (child_pid == -1)
     {
       perror("fork");
       sleep(ERROR_SLEEP);
       _exit(1);
     }
-  else if (child_pid == 0)
+  else
+    return; /* Do not go beyond this in the parent */
+  
+  int ret;
+  
+  /* In case the shell does not do this */
+  setsid();
+  
+  /* Set controlling terminal */
+  if (ioctl(STDIN_FILENO, TIOCSCTTY, 1))
+    perror("TIOCSCTTY");
+  signal(SIGINT, SIG_DFL);
+  
+  /* Partial login */
+  ret = entry->pw_uid
+    ? initgroups(username, entry->pw_gid) /* supplemental groups for user, can require network     */
+    : setgroups(0, NULL);                 /* supplemental groups for root, does not require netork */
+  if (ret == -1)
     {
-      int ret;
-      
-      /* In case the shell does not do this */
-      setsid();
-      
-      /* Set controlling terminal */
-      if (ioctl(STDIN_FILENO, TIOCSCTTY, 1))
-	perror("TIOCSCTTY");
-      signal(SIGINT, SIG_DFL);
-      
-      /* Partial login */
-      ret = entry->pw_uid
-	? initgroups(username, entry->pw_gid) /* supplemental groups for user, can require network     */
-	: setgroups(0, NULL);                 /* supplemental groups for root, does not require netork */
-      if (ret == -1)
-	{
-	  perror(entry->pw_uid ? "initgroups" : "setgroups");
-	  sleep(ERROR_SLEEP);
-	  _exit(1);
-	}
-      set_user(entry);
-      exec_shell(entry);
+      perror(entry->pw_uid ? "initgroups" : "setgroups");
+      sleep(ERROR_SLEEP);
+      _exit(1);
     }
+  set_user(entry);
+  exec_shell(entry);
 }
 
