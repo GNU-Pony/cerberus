@@ -30,9 +30,8 @@
 #include <termios.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
-#ifdef USE_TTY_GROUP
+#include <sys/types.h>
 #include <grp.h>
-#endif
 
 #include "config.h"
 

@@ -242,6 +242,8 @@ void do_login(int argc, char** argv)
     }
   else if (child_pid == 0)
     {
+      int ret;
+      
       /* In case the shell does not do this */
       setsid();
       
@@ -251,7 +253,15 @@ void do_login(int argc, char** argv)
       signal(SIGINT, SIG_DFL);
       
       /* Partial login */
-      /* TODO set supplemental groups */
+      ret = entry->pw_uid
+	? initgroups(username, entry->pw_gid) /* supplemental groups for user, can require network     */
+	: setgroups(0, NULL);                 /* supplemental groups for root, does not require netork */
+      if (ret == -1)
+	{
+	  perror(entry->pw_uid ? "initgroups" : "setgroups");
+	  sleep(ERROR_SLEEP);
+	  _exit(1);
+	}
       set_user(entry);
       exec_shell(entry);
     }
