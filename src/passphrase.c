@@ -58,7 +58,7 @@ char* get_passphrase(void)
       _exit(1);
     }
   
-  /* Read password until EOF or Enter, skip all ^0 as that
+  /* Read password until EOF or Enter, skip all \0 as that
      is probably not a part of the passphrase (good luck typing
      that in X.org) and can be echoed into stdin by the kernel. */
   for (;;)
