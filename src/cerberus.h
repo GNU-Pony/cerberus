@@ -39,7 +39,7 @@
 #include "quit.h"
 #include "login.h"
 #include "security.h"
-#include "parm.h"
+#include "pam.h"
 
 
 #ifndef USE_TTY_GROUP

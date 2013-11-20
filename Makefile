@@ -56,6 +56,7 @@ bin/cerberus: $(OBJ)
 	$(CC) $(LD_FLAGS) -o "$@" $^
 
 
+obj/cerberus.o: $(foreach H, $(SRC), src/$(H).h)
 obj/%.o: src/%.c src/%.h src/config.h
 	@mkdir -p obj
 	$(CC) $(CC_FLAGS) -o "$@" -c "$<"

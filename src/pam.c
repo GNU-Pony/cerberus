@@ -72,6 +72,6 @@ void initialise_pam(char* remote, char* username)
     }
   
   do_pam(pam_set_item(handle, PAM_RHOST, remote ?: "localhost"));
-  do_pam(pam_set_item(handle, PAM_TTY, ttyname(STDIN_FILENO) ?: "(none)");
+  do_pam(pam_set_item(handle, PAM_TTY, ttyname(STDIN_FILENO) ?: "(none)"));
 }
 
