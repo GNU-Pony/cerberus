@@ -71,6 +71,7 @@ void do_login(int argc, char** argv)
   char* passphrase = NULL;
   char preserve_env = 0;
   char skip_auth = 0;
+  int ret;
   #ifdef USE_TTY_GROUP
   struct group* group;
   #endif
@@ -242,8 +243,6 @@ void do_login(int argc, char** argv)
     }
   else
     return; /* Do not go beyond this in the parent */
-  
-  int ret;
   
   /* In case the shell does not do this */
   setsid();
