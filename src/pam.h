@@ -28,6 +28,21 @@
  */
 void initialise_pam(char* remote, char* username);
 
+/**
+ * Verify that the account may be used
+ */
+void verify_account_pam(void);
+
+/**
+ * Open PAM session
+ */
+void open_session_pam(void);
+
+/**
+ * Close PAM session
+ */
+void close_session_pam(void);
+
 
 #endif
 

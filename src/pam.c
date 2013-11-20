@@ -26,6 +26,9 @@
 #include "pam.h"
 
 
+#define __failed(RC)  ((RC) != PAM_SUCCESS)
+
+
 /**
  * The PAM handle
  */
@@ -44,7 +47,7 @@ static struct pam_conv conv = { misc_conv, NULL };
  */
 static void do_pam(int rc)
 {
-  if (rc != PAM_SUCCESS)
+  if (__failed(rc))
     {
       const char* msg = pam_strerror(handle, rc);
       if (msg)
@@ -73,5 +76,49 @@ void initialise_pam(char* remote, char* username)
   
   do_pam(pam_set_item(handle, PAM_RHOST, remote ?: "localhost"));
   do_pam(pam_set_item(handle, PAM_TTY, ttyname(STDIN_FILENO) ?: "(none)"));
+}
+
+
+/**
+ * Verify that the account may be used
+ */
+void verify_account_pam(void)
+{
+  int rc = pam_acct_mgmt(handle, 0);
+  if (rc == PAM_NEW_AUTHTOK_REQD)
+    rc = pam_chauthtok(handle, PAM_CHANGE_EXPIRED_AUTHTOK);
+  do_pam(rc);
+}
+
+
+/**
+ * Open PAM session
+ */
+void open_session_pam(void)
+{
+  int rc;
+  do_pam(pam_setcred(handle, PAM_ESTABLISH_CRED));
+  
+  if (__failed(rc = pam_open_session(handle, 0)))
+    {
+      pam_setcred(handle, PAM_DELETE_CRED);
+      do_pam(rc);
+    }
+  
+  if (__failed(rc = pam_setcred(handle, PAM_REINITIALIZE_CRED)))
+    {
+      pam_close_session(handle, 0);
+      do_pam(rc);
+    }
+}
+
+
+/**
+ * Close PAM session
+ */
+void close_session_pam(void)
+{
+  pam_setcred(handle, PAM_DELETE_CRED);
+  pam_end(handle, pam_close_session(handle, 0));
 }
 

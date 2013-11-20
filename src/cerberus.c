@@ -40,19 +40,21 @@ void do_login(int argc, char** argv);
  */
 int main(int argc, char** argv)
 {
-  int _status;
-  
   do_login(argc, argv);
   
   /* Ignore signals */
   signal(SIGQUIT, SIG_IGN);
   signal(SIGINT, SIG_IGN);
   
-  /* Wait for the login shell to exit */
-  waitpid(child_pid, &_status, 0);
+  /* Wait for the login shell and all grandchildren to exit */
+  while ((wait(NULL) == -1) && (errno == EINTR))
+    ;
   
   /* Reset terminal ownership and mode */
   chown_tty(0, tty_group, 0);
+  
+  /* Close login session */
+  close_session_pam();
   
   return 0;
 }
@@ -213,7 +215,7 @@ void do_login(int argc, char** argv)
   /* TODO verify passphrase */
   
   /* Wipe and free the passphrase from the memory */
-  if (skip_auth == 0)
+  if ((skip_auth == 0) && passphrase)
     {
       long i;
       for (i = 0; *(passphrase + i); i++)
@@ -226,12 +228,16 @@ void do_login(int argc, char** argv)
   reenable_echo();
   
   
+  /* Verify account, such as that it is enabled */
+  verify_account_pam();
+  
+  
   /* Partial login */
-  /* TODO verify that user is enabled */
   chown_tty(entry->pw_uid, tty_group, 0);
   chdir_home(entry);
   ensure_shell(entry);
   set_environ(entry, preserve_env);
+  open_session_pam();
   
   
   /* Stop signal handling */
@@ -247,6 +253,7 @@ void do_login(int argc, char** argv)
   if (child_pid == -1)
     {
       perror("fork");
+      close_session_pam();
       sleep(ERROR_SLEEP);
       _exit(1);
     }
