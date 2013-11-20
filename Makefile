@@ -37,7 +37,7 @@ INT_CPPFLAGS = $(foreach D, $(INT_DEFS), -D'$(D)=$($(D))')
 
 OPTIMISE = -Os
 CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(INT_CPPFLAGS)
-LDFLAGS = 
+LDFLAGS = -lpam
 CFLAGS = -std=gnu99 -Wall -Wextra
 
 CC_FLAGS = $(CPPFLAGS) $(CFLAGS) $(OPTIMISE)
