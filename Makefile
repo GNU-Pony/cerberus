@@ -43,7 +43,7 @@ CFLAGS = -std=gnu99 -Wall -Wextra
 CC_FLAGS = $(CPPFLAGS) $(CFLAGS) $(OPTIMISE)
 LD_FLAGS = $(LDFLAGS) $(CFLAGS) $(OPTIMISE)
 
-SRC = cerberus passphrase quit security login
+SRC = cerberus passphrase quit security login pam
 OBJ = $(foreach S, $(SRC), obj/$(S).o)
 
 

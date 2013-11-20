@@ -16,35 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __CERBERUS_H__
-#define __CERBERUS_H__
+#ifndef __PAM_H__
+#define __PAM_H__
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <pwd.h>
-#include <errno.h>
-#include <stropts.h>
-#include <termios.h>
-#include <sys/wait.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <grp.h>
-
-#include "config.h"
-
-#include "passphrase.h"
-#include "quit.h"
-#include "login.h"
-#include "security.h"
-#include "parm.h"
-
-
-#ifndef USE_TTY_GROUP
-#define tty_group  0
-#endif
+/**
+ * Initialise PAM
+ * 
+ * @param  remote    The remote computer, {@code NULL} for local login
+ * @param  username  The username of the user to log in to
+ */
+void initialise_pam(char* remote, char* username);
 
 
 #endif
