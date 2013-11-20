@@ -148,6 +148,15 @@ void do_login(int argc, char** argv)
     }
   
   
+  /* Only root may bypass authentication */
+  if (skip_auth && getuid())
+    {
+      printf("%s: only root by use the -f option\n", *argv);
+      sleep(ERROR_SLEEP);
+      _exit(2);
+    }
+  
+  
   /* Print ant we want a passphrase, if -f has not been used */
   if (skip_auth == 0)
     {
