@@ -82,6 +82,7 @@ char* get_passphrase(void)
   /* NUL-terminate passphrase */
   *(rc + len) = 0;
   
+  printf("\n");
   return rc;
 }
 

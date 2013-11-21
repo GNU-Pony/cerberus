@@ -22,13 +22,26 @@
 
 
 #ifdef USE_TTY_GROUP
+/**
+ * The group ID for the `tty` group
+ */
 static gid_t tty_group = 0;
 #endif
+
+/**
+ * The user's entry in the password file
+ */
 static struct passwd* entry;
-static pid_t child_pid;
 
+/**
+ * The process ID of the child process, 0 if none
+ */
+pid_t child_pid = 0;
 
-void do_login(int argc, char** argv);
+/**
+ * The passphrase
+ */
+char* passphrase = NULL;
 
 
 /**
@@ -70,7 +83,6 @@ void do_login(int argc, char** argv)
 {
   char* username = NULL;
   char* hostname = NULL;
-  char* passphrase = NULL;
   char preserve_env = 0;
   char skip_auth = 0;
   int ret;
@@ -202,17 +214,14 @@ void do_login(int argc, char** argv)
   username = entry->pw_name;
   
   
-  /* Get the passphrase, if -f has not been used */
-  if (skip_auth == 0)
-    {
-      passphrase = get_passphrase();
-      printf("\n");
-    }
+  
+  /* Verify passphrase or other token, if -f has not been used */
+  initialise_pam(hostname, username, read_passphrase);
+  if ((skip_auth == 0) && authenticate_pam())
+    printf("(auto-authenticated)\n");
   
   /* Passphrase entered, turn off timeout */
   alarm(0);
-  
-  /* TODO verify passphrase */
   
   /* Wipe and free the passphrase from the memory */
   if ((skip_auth == 0) && passphrase)
@@ -222,7 +231,6 @@ void do_login(int argc, char** argv)
 	*(passphrase + i) = 0;
       free(passphrase);
     }
-  
   
   /* Reset terminal settings */
   reenable_echo();
@@ -280,5 +288,17 @@ void do_login(int argc, char** argv)
     }
   set_user(entry);
   exec_shell(entry);
+}
+
+
+/**
+ * Read passphrase from the terminal
+ * 
+ * @return  The entered passphrase
+ */
+char* read_passphrase(void)
+{
+  passphrase = get_passphrase();
+  return passphrase;
 }
 

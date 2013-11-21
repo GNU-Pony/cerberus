@@ -25,8 +25,9 @@
  * 
  * @param  remote    The remote computer, {@code NULL} for local login
  * @param  username  The username of the user to log in to
+ * @param  reader    Function that can be used to read a passphrase from the terminal
  */
-void initialise_pam(char* remote, char* username);
+void initialise_pam(char* remote, char* username, char* (*reader)(void));
 
 /**
  * Verify that the account may be used
@@ -42,6 +43,13 @@ void open_session_pam(void);
  * Close PAM session
  */
 void close_session_pam(void);
+
+/**
+ * Perform token authentication
+ * 
+ * @return  Whether the user got automatically authenticated
+ */
+char authenticate_pam(void);
 
 
 #endif

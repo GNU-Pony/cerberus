@@ -47,5 +47,9 @@
 #endif
 
 
+void do_login(int argc, char** argv);
+char* read_passphrase(void);
+
+
 #endif
 
