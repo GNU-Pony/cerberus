@@ -42,7 +42,7 @@ VRB_CPPFLAGS = $(foreach D, $(VRB_DEFS), -D'$(D)=$($(D))') -DAUTH=$(auth_$(AUTH)
 OPTIMISE = -Os
 CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(VRB_CPPFLAGS)
 CFLAGS = -std=gnu99 -Wall -Wextra
-LDFLAGS =
+LDFLAGS = -lpassphrase
 ifeq ($(AUTH),crypt)
 LDFLAGS += -lcrypt
 endif
@@ -53,7 +53,7 @@ endif
 CC_FLAGS = $(CPPFLAGS) $(CFLAGS) $(OPTIMISE)
 LD_FLAGS = $(LDFLAGS) $(CFLAGS) $(OPTIMISE)
 
-SRC = cerberus passphrase quit security login
+SRC = cerberus quit security login
 ifneq ($(AUTH),none)
 SRC += auth/$(AUTH)
 endif

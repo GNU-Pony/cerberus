@@ -19,8 +19,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <passphrase.h>
+
 #include "config.h"
-#include "passphrase.h"
 #include "quit.h"
 
 
@@ -33,7 +34,7 @@ void timeout_quit(int signal)
 {
   (void) signal;
   printf("\nTimed out.\n");
-  reenable_echo();
+  passphrase_reenable_echo();
   _exit(10);
 }
 
@@ -47,7 +48,7 @@ void user_quit(int signal)
 {
   (void) signal;
   printf("\n");
-  reenable_echo();
+  passphrase_reenable_echo();
   _exit(130);
 }
 

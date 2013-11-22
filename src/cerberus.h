@@ -34,6 +34,8 @@
 #include <sys/types.h>
 #include <grp.h>
 
+#include <passphrase.h>
+
 #include "config.h"
 
 #include "passphrase.h"

@@ -104,7 +104,7 @@ void do_login(int argc, char** argv)
   
   
   /* Disable echoing */
-  disable_echo();
+  passphrase_disable_echo();
   /* This should be done as early and quickly as possible so as little
      as possible of the passphrase gets leaked to the output if the user
      begins entering the passphrase directly after the username. */
@@ -201,7 +201,7 @@ void do_login(int argc, char** argv)
   secure_tty(tty_group);
   
   /* Redisable echoing */
-  disable_echo();
+  passphrase_disable_echo();
   
   
   /* Set up clean quiting and time out */
@@ -246,7 +246,7 @@ void do_login(int argc, char** argv)
     }
   
   /* Reset terminal settings */
-  reenable_echo();
+  passphrase_reenable_echo();
   
   
   /* Verify account, such as that it is enabled */
@@ -311,7 +311,7 @@ void do_login(int argc, char** argv)
  */
 char* read_passphrase(void)
 {
-  passphrase = get_passphrase();
+  passphrase = passphrase_read();
   return passphrase;
 }
 
