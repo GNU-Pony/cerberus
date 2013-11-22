@@ -16,39 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __CERBERUS_H__
-#define __CERBERUS_H__
+#ifndef __AUTH_H__
+#define __AUTH_H__
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <pwd.h>
-#include <errno.h>
-#include <stropts.h>
-#include <termios.h>
-#include <sys/wait.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <grp.h>
 
-#include "config.h"
+#if AUTH == 0
 
-#include "passphrase.h"
-#include "quit.h"
-#include "login.h"
-#include "security.h"
-#include "auth.h"
+#define  close_login_session(...)  /* do nothing */
+#define  initialise_login(...)     (void) hostname
+#define  authenticate_login(...)   1
+#define  verify_account(...)       /* do nothing */
+#define  open_login_session(...)   /* do nothing */
 
+#elif AUTH == 1
 
-#ifndef USE_TTY_GROUP
-#define tty_group  0
+#include "auth/pam.h"
+#define  close_login_session  close_session_pam
+#define  initialise_login     initialise_pam
+#define  authenticate_login   authenticate_pam
+#define  verify_account       verify_account_pam
+#define  open_login_session   open_session_pam
+
 #endif
-
-
-void do_login(int argc, char** argv);
-char* read_passphrase(void);
 
 
 #endif

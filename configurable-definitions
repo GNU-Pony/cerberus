@@ -1,35 +1,43 @@
 TTY_PERM  (default: 0600, type: int)
 
-   Mode for TTY devices
+    Mode for TTY devices
 
 
 USE_TTY_GROUP (default: undefinied, type: #ifdef)
 
-   Use the group tty for group ownership of TTY devices
+    Use the group tty for group ownership of TTY devices
 
 
 FAILURE_SLEEP  (default: 5, type: float)
 
-   Number of seconds to sleep on login failure
+    Number of seconds to sleep on login failure
 
 
 ERROR_SLEEP  (default: 2, type: float)
 
-   Number of seconds to sleep on error,
-   so the user has time to read the error message
+    Number of seconds to sleep on error,
+    so the user has time to read the error message
 
 
 TIMEOUT_SECONDS  (default: 60, type: int)
 
-   Number of seconds before timeout when waiting for a passphrase
+    Number of seconds before timeout when waiting for a passphrase
 
 
 OWN_VCSA (default: undefinied, type: #ifdef)
 
-   Take ownership of and change mode of VCSA device 
+    Take ownership of and change mode of VCSA device 
 
 
 OWN_VCS (default: undefinied, type: #ifdef)
 
-   Take ownership of and change mode of VCS device 
+    Take ownership of and change mode of VCS device 
+
+
+AUTH (default: pam, type: name)
+
+    Authentication module. One of:
+
+        pam	   -- Pluggable Authentication Module (PAM)
+	none	   -- Always auto-authenticate
 

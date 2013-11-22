@@ -23,7 +23,7 @@
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 
-#include "config.h"
+#include "../config.h"
 
 #include "pam.h"
 

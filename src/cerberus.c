@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   chown_tty(0, tty_group, 0);
   
   /* Close login session */
-  close_session_pam();
+  close_login_session();
   
   return 0;
 }
@@ -215,8 +215,8 @@ void do_login(int argc, char** argv)
   
   
   /* Verify passphrase or other token, if -f has not been used */
-  initialise_pam(hostname, username, read_passphrase);
-  if ((skip_auth == 0) && authenticate_pam())
+  initialise_login(hostname, username, read_passphrase);
+  if ((skip_auth == 0) && authenticate_login())
     printf("(auto-authenticated)\n");
   
   /* Passphrase entered, turn off timeout */
@@ -236,7 +236,7 @@ void do_login(int argc, char** argv)
   
   
   /* Verify account, such as that it is enabled */
-  verify_account_pam();
+  verify_account();
   
   
   /* Partial login */
@@ -244,7 +244,7 @@ void do_login(int argc, char** argv)
   chdir_home(entry);
   ensure_shell(entry);
   set_environ(entry, preserve_env);
-  open_session_pam();
+  open_login_session();
   
   
   /* Stop signal handling */
@@ -260,7 +260,7 @@ void do_login(int argc, char** argv)
   if (child_pid == -1)
     {
       perror("fork");
-      close_session_pam();
+      close_login_session();
       sleep(ERROR_SLEEP);
       _exit(1);
     }

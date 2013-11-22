@@ -14,6 +14,7 @@ _LS = $(LOCAL_PREFIX)$(SBIN)
 _US = $(USR_PREFIX)$(SBIN)
 _SS = $(SBIN)
 
+AUTH = pam
 TTY_GROUP = tty
 DEFAULT_HOME = /
 DEFAULT_SH = sh
@@ -24,26 +25,35 @@ VCSA = $(DEV)/vcsa
 PATH = $(_LB):$(_UB):$(_SB)
 PATH_ROOT = $(_LS):$(_LB):$(_US):$(_UB):$(_SS):$(_SB)
 
+auth_none = 0
+auth_pam = 1
+
 H = \#
 VCS_LEN = $(shell vcs="$(VCS)" ; echo "$${$(H)vcs}")
 VCSA_LEN = $(shell vcsa="$(VCSA)" ; echo "$${$(H)vcsa}")
 VCS_VCSA_LEN = $(shell (echo $(VCS_LEN) ; echo $(VCSA_LEN)) | sort -n | tail -n 1)
 
 STR_DEFS = TTY_GROUP DEFAULT_HOME DEFAULT_SH DEFAULT_SHELL DEFAULT_TERM PATH PATH_ROOT VCS VCSA
-INT_DEFS = VCS_LEN VCSA_LEN VCS_VCSA_LEN
+VRB_DEFS = VCS_LEN VCSA_LEN VCS_VCSA_LEN
 
 STR_CPPFLAGS = $(foreach D, $(STR_DEFS), -D'$(D)="$($(D))"')
-INT_CPPFLAGS = $(foreach D, $(INT_DEFS), -D'$(D)=$($(D))')
+VRB_CPPFLAGS = $(foreach D, $(VRB_DEFS), -D'$(D)=$($(D))') -DAUTH=$(auth_$(AUTH))
 
 OPTIMISE = -Os
-CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(INT_CPPFLAGS)
-LDFLAGS = -lpam
+CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(VRB_CPPFLAGS)
 CFLAGS = -std=gnu99 -Wall -Wextra
+LDFLAGS =
+ifeq ($(AUTH),pam)
+LDFLAGS += -lpam
+endif
 
 CC_FLAGS = $(CPPFLAGS) $(CFLAGS) $(OPTIMISE)
 LD_FLAGS = $(LDFLAGS) $(CFLAGS) $(OPTIMISE)
 
-SRC = cerberus passphrase quit security login pam
+SRC = cerberus passphrase quit security login
+ifneq ($(AUTH),none)
+SRC += auth/$(AUTH)
+endif
 OBJ = $(foreach S, $(SRC), obj/$(S).o)
 
 
@@ -56,9 +66,9 @@ bin/cerberus: $(OBJ)
 	$(CC) $(LD_FLAGS) -o "$@" $^
 
 
-obj/cerberus.o: $(foreach H, $(SRC), src/$(H).h)
+obj/cerberus.o: $(foreach H, $(SRC), src/$(H).h) src/auth.h
 obj/%.o: src/%.c src/%.h src/config.h
-	@mkdir -p obj
+	@mkdir -p "$(shell dirname "$@")"
 	$(CC) $(CC_FLAGS) -o "$@" -c "$<"
 
 
