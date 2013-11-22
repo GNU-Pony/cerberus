@@ -224,7 +224,7 @@ void do_login(int argc, char** argv)
   alarm(0);
   
   /* Wipe and free the passphrase from the memory */
-  if ((skip_auth == 0) && passphrase)
+  if (passphrase)
     {
       long i;
       for (i = 0; *(passphrase + i); i++)
