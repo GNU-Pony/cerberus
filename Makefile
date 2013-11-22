@@ -31,10 +31,9 @@ auth_pam = 1
 H = \#
 VCS_LEN = $(shell vcs="$(VCS)" ; echo "$${$(H)vcs}")
 VCSA_LEN = $(shell vcsa="$(VCSA)" ; echo "$${$(H)vcsa}")
-VCS_VCSA_LEN = $(shell (echo $(VCS_LEN) ; echo $(VCSA_LEN)) | sort -n | tail -n 1)
 
 STR_DEFS = TTY_GROUP DEFAULT_HOME DEFAULT_SH DEFAULT_SHELL DEFAULT_TERM PATH PATH_ROOT VCS VCSA
-VRB_DEFS = VCS_LEN VCSA_LEN VCS_VCSA_LEN
+VRB_DEFS = VCS_LEN VCSA_LEN
 
 STR_CPPFLAGS = $(foreach D, $(STR_DEFS), -D'$(D)="$($(D))"')
 VRB_CPPFLAGS = $(foreach D, $(VRB_DEFS), -D'$(D)=$($(D))') -DAUTH=$(auth_$(AUTH))
