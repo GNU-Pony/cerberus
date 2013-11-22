@@ -119,10 +119,13 @@ void initialise_pam(char* remote, char* username, char* (*reader)(void))
  */
 void verify_account_pam(void)
 {
+  /* FIXME freezes */
+  /*
   int rc = pam_acct_mgmt(handle, 0);
   if (rc == PAM_NEW_AUTHTOK_REQD)
     rc = pam_chauthtok(handle, PAM_CHANGE_EXPIRED_AUTHTOK);
   do_pam(rc);
+  */
 }
 
 
