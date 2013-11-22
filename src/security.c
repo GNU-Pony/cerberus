@@ -132,8 +132,8 @@ void chown_tty(uid_t owner, gid_t group, char with_fail)
 	    
 	    vcs -= VCS_LEN;
 	    vcsa -= VCSA_LEN;
-	    strcpy(vcs,  VCS);
-	    strcpy(vcsa, VCSA);
+	    strncpy(vcs,  VCS,  VCS_LEN);
+	    strncpy(vcsa, VCSA, VCSA_LEN);
 	    
 	    #ifdef OWN_VCS
 	      if (chown(vcs, owner, group) && with_fail)  fail("chown");

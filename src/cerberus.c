@@ -53,6 +53,8 @@ char* passphrase = NULL;
  */
 int main(int argc, char** argv)
 {
+  char* tty_device = ttyname(STDIN_FILENO);
+  
   do_login(argc, argv);
   
   /* Ignore signals */
@@ -62,6 +64,16 @@ int main(int argc, char** argv)
   /* Wait for the login shell and all grandchildren to exit */
   while ((wait(NULL) == -1) && (errno == EINTR))
     ;
+  
+  /* Regain access to the terminal */
+  if (tty_device)
+    {
+      int fd = open(tty_device, O_RDWR | O_NONBLOCK);
+      if (fd)
+	dup2(fd, 0);
+      dup2(fd, 1);
+      dup2(fd, 2);
+    }
   
   /* Reset terminal ownership and mode */
   chown_tty(0, tty_group, 0);

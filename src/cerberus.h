@@ -28,6 +28,7 @@
 #include <errno.h>
 #include <stropts.h>
 #include <termios.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
