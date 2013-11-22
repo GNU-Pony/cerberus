@@ -265,7 +265,7 @@ void do_login(int argc, char** argv)
       sleep(ERROR_SLEEP);
       _exit(1);
     }
-  else
+  else if (child_pid)
     return; /* Do not go beyond this in the parent */
   
   /* In case the shell does not do this */
