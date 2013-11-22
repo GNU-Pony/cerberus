@@ -214,7 +214,6 @@ void do_login(int argc, char** argv)
   username = entry->pw_name;
   
   
-  
   /* Verify passphrase or other token, if -f has not been used */
   initialise_pam(hostname, username, read_passphrase);
   if ((skip_auth == 0) && authenticate_pam())

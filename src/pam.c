@@ -216,7 +216,7 @@ char authenticate_pam(void)
  * 
  * @param   num_msg      Number of pointers in the array `msg`
  * @param   msg          Message from PAM
- * @param   resp         Responses to PAM for by index corresponding messages
+ * @param   resp         Pointer to responses to PAM for by index corresponding messages
  * @param   appdata_ptr  (Not used)
  * @return               `PAM_SUCCESS`, `PAM_CONV_ERR` or `PAM_BUF_ERR`
  */
@@ -225,6 +225,8 @@ int conv_pam(int num_msg, const struct pam_message** msg, struct pam_response** 
   int i;
   
   (void) appdata_ptr;
+  
+  *resp = calloc(num_msg, sizeof(struct pam_response));
   
   for (i = 0; i < num_msg; i++)
     {
