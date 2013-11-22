@@ -312,6 +312,12 @@ void do_login(int argc, char** argv)
 char* read_passphrase(void)
 {
   passphrase = passphrase_read();
+  if (passphrase == NULL)
+    {
+      perror("passphrase_read");
+      sleep(ERROR_SLEEP);
+      _exit(1);
+    }
   return passphrase;
 }
 
