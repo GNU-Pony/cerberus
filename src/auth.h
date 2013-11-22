@@ -31,6 +31,15 @@
 
 #elif AUTH == 1
 
+#include "auth/crypt.h"
+#define  close_login_session(...)  /* do nothing */
+#define  initialise_login          initialise_crypt
+#define  authenticate_login        authenticate_crypt
+#define  verify_account(...)       /* do nothing */
+#define  open_login_session(...)   /* do nothing */
+
+#elif AUTH == 2
+
 #include "auth/pam.h"
 #define  close_login_session  close_session_pam
 #define  initialise_login     initialise_pam

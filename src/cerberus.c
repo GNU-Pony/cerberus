@@ -196,6 +196,7 @@ void do_login(int argc, char** argv)
   #ifdef USE_TTY_GROUP
   if ((group = getgrnam(TTY_GROUP)))
     tty_group = group->gr_gid;
+  endgrent();
   #endif
   secure_tty(tty_group);
   
@@ -223,6 +224,7 @@ void do_login(int argc, char** argv)
       sleep(ERROR_SLEEP);
       _exit(1);
     }
+  endpwent();
   username = entry->pw_name;
   
   

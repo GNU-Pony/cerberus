@@ -40,4 +40,10 @@ AUTH (default: pam, type: name)
 
         pam	   -- Pluggable Authentication Module (PAM)
 	none	   -- Always auto-authenticate
+	crypt	   -- Authenticate with crypt and /etc/shadow or /etc/passwd
+
+
+NO_SHADOW (default: undefined, type: #ifdef, required: AUTH=crypt)
+
+    Do not use /etc/shadow (shadow.h) unless HAVE_SHADOW is definied
 

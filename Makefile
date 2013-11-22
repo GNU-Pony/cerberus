@@ -26,7 +26,8 @@ PATH = $(_LB):$(_UB):$(_SB)
 PATH_ROOT = $(_LS):$(_LB):$(_US):$(_UB):$(_SS):$(_SB)
 
 auth_none = 0
-auth_pam = 1
+auth_crypt = 1
+auth_pam = 2
 
 H = \#
 VCS_LEN = $(shell vcs="$(VCS)" ; echo "$${$(H)vcs}")
@@ -42,6 +43,9 @@ OPTIMISE = -Os
 CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(VRB_CPPFLAGS)
 CFLAGS = -std=gnu99 -Wall -Wextra
 LDFLAGS =
+ifeq ($(AUTH),crypt)
+LDFLAGS += -lcrypt
+endif
 ifeq ($(AUTH),pam)
 LDFLAGS += -lpam
 endif
