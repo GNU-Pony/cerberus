@@ -132,6 +132,7 @@ void verify_account_pam(void)
 void open_session_pam(void)
 {
   int rc;
+  char** env;
   struct sigaction signal_action;
   
   do_pam(pam_setcred(handle, PAM_ESTABLISH_CRED));
@@ -155,6 +156,15 @@ void open_session_pam(void)
   signal_action.sa_handler = quit_pam;
   sigaction(SIGHUP, &signal_action, NULL);
   sigaction(SIGTERM, &signal_action, &signal_action_term);
+  
+  for (env = pam_getenvlist(handle); env && *env; env++)
+    if (putenv(*env))
+      {
+	pam_setcred(handle, PAM_DELETE_CRED);
+	pam_end(handle, pam_close_session(handle, 0));
+	sleep(ERROR_SLEEP);
+	_exit(1);
+      }
 }
 
 
