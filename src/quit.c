@@ -22,6 +22,7 @@
 #include <passphrase.h>
 
 #include "config.h"
+
 #include "quit.h"
 
 
@@ -35,6 +36,7 @@ void timeout_quit(int signal)
   (void) signal;
   printf("\nTimed out.\n");
   passphrase_reenable_echo();
+  sleep(ERROR_SLEEP);
   _exit(10);
 }
 
