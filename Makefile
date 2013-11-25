@@ -1,8 +1,14 @@
+PREFIX = /usr
 USR_PREFIX = /usr
 LOCAL_PREFIX = $(USR_PREFIX)/local
 BIN = /bin
 SBIN = /sbin
+INSTALL_BIN = $(SBIN)
 DEV = /dev
+DATA = /share
+LICENSES = $(DATA)/licenses
+COMMAND = cerberus
+PKGNAME = cerberus
 
 EXTRA_CPP_FLAGS = 
 # see configurable-definitions
@@ -61,13 +67,15 @@ OBJ = $(foreach S, $(SRC), obj/$(S).o)
 
 
 .PHONY: all
-all: bin/cerberus
+all: cerberus doc
 
+
+.PHONY: cerberus
+cerberus: bin/cerberus
 
 bin/cerberus: $(OBJ)
 	@mkdir -p bin
 	$(CC) $(LD_FLAGS) -o "$@" $^
-
 
 obj/cerberus.o: $(foreach H, $(SRC), src/$(H).h) src/auth.h
 obj/%.o: src/%.c src/%.h src/config.h
@@ -75,7 +83,40 @@ obj/%.o: src/%.c src/%.h src/config.h
 	$(CC) $(CC_FLAGS) -o "$@" -c "$<"
 
 
+.PHONY: doc
+doc: info
+
+.PHONY: info
+info: cerberus.info.gz
+
+%.info: info/%.texinfo
+	makeinfo "$<"
+
+%.gz: %
+	gzip -9 < "$<" > "$@"
+
+
+.PHONY: install
+install: bin/cerberus cerberus.info.gz
+	install -dm755 -- "$(DESTDIR)$(PREFIX)$(INSTALL_BIN)"
+	install  -m755 -- bin/cerberus "$(DESTDIR)$(PREFIX)$(INSTALL_BIN)/$(COMMAND)"
+	install -dm755 -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)"
+	install  -m644 -- COPYING LICENSE "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)"
+	install -dm755 -- "$(DESTDIR)$(PREFIX)$(DATA)/info"
+	install  -m644 -- cerberus.info.gz "$(DESTDIR)$(PREFIX)$(DATA)/info/$(PKGNAME).info.gz"
+
+
+.PHONY: uninstall
+uninstall:
+	-rm -- "$(DESTDIR)$(PREFIX)$(INSTALL_BIN)/$(COMMAND)"
+	-rm -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)/COPYING"
+	-rm -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)/LICENSE"
+	-rmdir -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)"
+	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/info/$(PKGNAME).info.gz"
+
+
+
 .PHONY: clean
 clean:
-	-rm -r bin obj
+	-rm -r bin obj cerberus.info.gz
 
