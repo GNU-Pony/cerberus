@@ -36,7 +36,7 @@
 static inline void fail(char* str)
 {
   perror(str);
-  sleep(FAILURE_SLEEP);
+  sleep(ERROR_SLEEP);
   _exit(1);
 }
 
