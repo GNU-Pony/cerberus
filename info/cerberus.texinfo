@@ -61,8 +61,8 @@ Texts. A copy of the license is included in the section entitled
 @node Overview
 @chapter Overview
 
-@command{cerberus} @footnote{Which should not have confused with
-Kerberos (which could be possible despite no common syllables).}
+@command{cerberus} @footnote{Which should not be confused with
+Kerberos (which could be possible despite having no common syllables).}
 is a login command which can be used as a drop in replacement for
 @command{login} (provided by util-linux), except for services
 that require @command{login} to ask for a username. @command{cerberus}
