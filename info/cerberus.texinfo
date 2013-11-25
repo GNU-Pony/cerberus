@@ -61,15 +61,257 @@ Texts. A copy of the license is included in the section entitled
 @node Overview
 @chapter Overview
 
+@command{cerberus} @footnote{Which should not have confused with
+Kerberos (which could be possible despite no common syllables).}
+is a login command which can be used as a drop in replacement for
+@command{login} (provided by util-linux), except for services
+that require @command{login} to ask for a username. @command{cerberus}
+aims to be minimal, unbloated and configurable.
+
 
 
 @node Invoking
 @chapter Invoking
 
+@command{cerberus} recognised the same for options as @command{login}:
+
+@table @option
+
+@item -p
+If this option is used, @command{cerberus} will not clear
+@footnote{The variable @var{TERM} is always perserved.}
+the environment, only override (and add if missing) the variables
+it would otherwise put into the environment.
+
+@item -f [USERNAME]
+This option can only be used by root. If used, not pasphrase
+is require to log in.
+
+@item -h HOSTNAME
+This option is by other services to which host the user is
+logging in from.
+
+@item -H
+This option is ignored as it is used to suppress printing
+of the hostname in the prompt for a username, which is lacking
+in @command{cerberus} and with be suppressed anyway if it was
+not lacking.
+
+@item -V
+@command{login} would disable version information and exit,
+but @command{cerberus} simple exits instead.
+
+@item --
+@option{--} can be placed directly before the username to
+make sure it is not parse as an option.
+
+@end table
+
 
 
 @node Configuring
 @chapter Configuring
+
+Rather than configuring @command{cerberus} via an @file{/etc}
+file, @command{cerberus} is only configured at compile time.
+
+@command{cerberus} can be configured to the authentication
+method of your choose, this is done by specifing a value
+for the variable @var{AUTH} when invoking @command{make}:
+
+@table @command
+@item make AUTH=pam
+Use Pluggable Authentication Module.
+
+
+@item make AUTH=crypt
+Use the @command{crypt} function to verify the
+passphrase against the the hashed passphrase in
+@file{/etc/shadow}, with @file{/etc/passwd} as
+fallback.
+
+This option will not require the user to even
+press Return, if the user does not have a passphrase
+(blank in the shadow file.)
+
+
+@item make AUTH=crypt EXTRA_CPP_FLAGS=-DNO_SHADOW
+Use the @command{crypt} function to verify the
+passphrase against the the hashd passphrase in
+@file{/etc/passwd}.
+
+Note: @file{/etc/passwd} does probably not contain
+a passphrase, but just an `x' instead.
+
+This option will not require the user to even
+press Return, if the user does not have a passphrase
+(blank in the passwd file.)
+
+
+@item make AUTH=none
+Always bypass authentication.
+
+@end table
+
+
+The makefile variable @var{EXTRA_CPP_FLAGS} is
+used to add definitions the to C preprocessor
+when compiling @command{cerberus}. As seen,
+the option @code{NO_SHADOW} can be added by
+setting @var{EXTRA_CPP_FLAGS} to @code{-DNO_SHADOW}.
+Additional options can be added with by adding
+them with a @code{-D} prefix, and adding them
+as a space separated list.
+
+Other recognised definitions are:
+
+@table @code
+
+@item OWN_VCS
+Transfer ownership and change permission bits of
+the @file{/dev/vcs[0-9]+} file corresponding to the
+terminal the user logs in to, if any.
+
+If the prefix for this files are not @file{/dev/vcs},
+it can be specified by the makefile variable @var{VCS}.
+Just the prefix @file{/dev} can be change by setting
+the makefile variable @var{DEV}.
+
+
+@item OWN_VCSA
+Transfer ownership and change permission bits of
+the @file{/dev/vcsa[0-9]+} file corresponding to the
+terminal the user logs in to, if any.
+
+If the prefix for this files are not @file{/dev/vcsa},
+it can be specified by the makefile variable @var{VCSA}.
+Just the prefix @file{/dev} can be change by setting
+the makefile variable @var{DEV}.
+
+
+@item USE_TTY_GROUP
+Change the group to the TTY group instead of keeping
+the group as root, in addition to changing the owner.
+
+The TTY group is by default `tty', but this can be
+changed by setting the makefile variable @var{TTY_GROUP}
+to the name of the TTY group. For example:
+@command{make EXTRA_CPP_FLAGS=-DUSE_TTY_GROUP TTY_GROUP=ttyspies}
+
+By default the group has no permissions, this can
+be change by specifing the files' permissions bits
+with the definition @code{TTY_PERM}, for example
+@command{make EXTRA_CPP_FLAGS=-TTY_PERM=0660}.
+Remember that the leading zero is needed if you
+want to specify the value in octal form.
+
+
+@item ERROR_SLEEP
+By default @command{cerberus} waits 2 seconds before
+exiting if an error occurred, to give the user time
+to read the error message before the getty program
+@footnote{For example: @command{getty}, @command{agetty},
+@command{mgetty}, @command{gates-of-tartaros}}
+clears the screen when it is invoked again by the
+@command{init} process.
+
+To change this specify the a rational number of
+seconds expressed in the form @command{a.b} or
+@command{a}. For example:
+@command{make EXTRA_CPP_FLAGS=-ERROR_SLEEP=0.5}.
+
+Zero as the value will disable this.
+
+
+@item FAILURE_SLEEP
+By default @command{cerberus} waits 5 seconds before
+exiting if an incorrect passphrased was entered, to
+prevent online brute forcing by remote machines.
+
+To change this specify the a rational number of
+seconds expressed in the form @command{a.b} or
+@command{a}. For example:
+@command{make EXTRA_CPP_FLAGS=-FAILURE_SLEEP=0}.
+
+Zero as the value will disable this.
+
+
+@item TIMEOUT_SECONDS
+By default @command{cerberus} waits 60 seconds
+before exiting unless the user have entered the
+correct passphrase that as been verified.
+
+This value must be an integer, zero as the value
+will disable this.
+
+Example:
+@command{make EXTRA_CPP_FLAGS=-FAILURE_SLEEP=30}.
+
+@end table
+
+
+The are a few additional settings that can be
+configured by changing the values of makefile
+variables:
+
+@table @var
+
+@item DEFAULT_SH
+@itemx DEFAULT_SHELL
+If the user do not have a default shell specified,
+a POSIX shell will be used. The same shell will
+also be used to parse the arguments if the specified
+shell contains spaces. By default this shell will
+be @command{sh}@footnote{The shell will be invoked
+with its basename prefixed by a dash as its zeroth
+argument} with the path @file{/bin/sh}.
+@command{sh} can be changed to, for example
+@command{bash} by setting invoking @command{make}
+with the argument @code{DEFAULT_SH=bash}. This
+will set the executed file to @file{/bin/bash},
+the prefix @file{/bin} is specified by the variable
+@var{BIN}. If path is incorrect it can be set by
+change the value of the variable @var{DEFAULT_SHELL}.
+
+@item DEFAULT_HOME
+If the user does not have a home specified,
+the login shell well be started in the @file{/}
+directory instead. This directory can be change
+by change the value of the makefile variable
+@var{DEFAULT_HOME}.
+
+@item DEFAULT_TERM
+If @command{cerberus} is invoked without the
+environment variable @var{TERM} set (may be empty),
+it will be exported with the value of the
+makefile variable @var{DEFAULT_TERM} with by
+default is `dumb'.
+
+@item PATH
+@item PATH_ROOT
+By default the environment variable @var{PATH} will be
+exported to @file{/usr/local/bin:/usr/bin:/bin}, and
+@file{/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin/:/bin}
+if the user logs in as root.
+
+@file{/bin} is specified by the makefile variable
+@var{BIN}, @file{/sbin} by @var{SBIN}, @file{/usr/local}
+by @var{LOCAL_PREFIX} and @file{/usr} (even in
+@file{/usr/local}) by @var{USR_PREFIX}.
+
+If the values are not good they can be changed by
+setting the value of the makefile variables
+@command{PATH} for normal users and @command{PATH_ROOT}
+for the root user.
+
+When this variables are used by programs, they
+are parsed as @code{:} being the separator and
+paths specified to the left takes precedence over
+paths specified to the right. @file{sbin} directories
+are only useful by root so there is no reason
+for adding them for non-root users.
+
+@end table
 
 
 
