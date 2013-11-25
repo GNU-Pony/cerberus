@@ -128,8 +128,10 @@ void do_login(int argc, char** argv)
 	  ;
 	else if ((*arg == '-') && (double_dashed == 0))
 	  while ((c = *(++arg)))
-	    if ((c == 'V') || (c == 'H'))
+	    if (c == 'H')
 	      ;
+	    else if (c == 'V')
+	      _exit(2);
 	    else if (c == 'p')
 	      preserve_env = 1;
 	    else if (c == 'h')
