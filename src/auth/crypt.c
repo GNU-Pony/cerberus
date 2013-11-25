@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <string.h>
+#include <termios.h>
 #ifdef HAVE_SHADOW
 #include <shadow.h>
 #endif
@@ -83,6 +84,7 @@ char authenticate_crypt(void)
   struct passwd* passwd_entry = NULL;
   char* crypted;
   char* entered;
+  struct termios stty;
   
 #ifdef HAVE_SHADOW
   shadow_entry = getspnam(login_username);
@@ -114,6 +116,12 @@ char authenticate_crypt(void)
   entered = crypt(passphrase_reader(), crypted /* salt argument stops parsing when encrypted begins */);
   if (entered && !strcmp(entered, crypted))
     return 0;
+  
+  /* Clear ISIG (and everything else) to prevent the user
+   * from skipping the brute force protection sleep. */
+  tcgetattr(STDIN_FILENO, &stty);
+  stty.c_lflag = 0;
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &stty);
   
   printf("Incorrect passphrase\n");
   sleep(FAILURE_SLEEP);

@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
+#include <termios.h>
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 
@@ -214,6 +215,13 @@ char authenticate_pam(void)
   
   if (__failed(rc = pam_authenticate(handle, 0)))
     {
+      /* Clear ISIG (and everything else) to prevent the user
+       * from skipping the brute force protection sleep. */
+      struct termios stty;
+      tcgetattr(STDIN_FILENO, &stty);
+      stty.c_lflag = 0;
+      tcsetattr(STDIN_FILENO, TCSAFLUSH, &stty);
+      
       printf("Incorrect passphrase\n");
       pam_end(handle, rc);
       sleep(FAILURE_SLEEP);
