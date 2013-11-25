@@ -11,4 +11,8 @@ obj/
 *.o
 *.out
 *.gch
+*.info
+*.gz
+*.bz2
+*.xz
 
