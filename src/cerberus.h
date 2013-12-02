@@ -34,11 +34,12 @@
 #include <sys/types.h>
 #include <grp.h>
 
+#if AUTH > 0
 #include <passphrase.h>
+#endif
 
 #include "config.h"
 
-#include "passphrase.h"
 #include "quit.h"
 #include "login.h"
 #include "security.h"
@@ -51,7 +52,12 @@
 
 
 void do_login(int argc, char** argv);
+
+#if AUTH > 0
 char* read_passphrase(void);
+#else
+#define read_passphrase  NULL
+#endif
 
 
 #endif

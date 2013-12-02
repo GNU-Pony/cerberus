@@ -48,7 +48,10 @@ VRB_CPPFLAGS = $(foreach D, $(VRB_DEFS), -D'$(D)=$($(D))') -DAUTH=$(auth_$(AUTH)
 OPTIMISE = -Os
 CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(VRB_CPPFLAGS)
 CFLAGS = -std=gnu99 -Wall -Wextra
-LDFLAGS = -lpassphrase
+LDFLAGS =
+ifneq ($(AUTH),none)
+LDFLAGS += -lpassphrase
+endif
 ifeq ($(AUTH),crypt)
 LDFLAGS += -lcrypt
 endif

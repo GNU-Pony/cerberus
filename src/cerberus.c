@@ -38,10 +38,12 @@ static struct passwd* entry;
  */
 pid_t child_pid = 0;
 
+#if AUTH > 0
 /**
  * The passphrase
  */
 char* passphrase = NULL;
+#endif
 
 
 /**
@@ -103,11 +105,13 @@ void do_login(int argc, char** argv)
   #endif
   
   
+  #if AUTH > 0
   /* Disable echoing */
   passphrase_disable_echo();
   /* This should be done as early and quickly as possible so as little
      as possible of the passphrase gets leaked to the output if the user
      begins entering the passphrase directly after the username. */
+  #endif
   
   
   /* Set process group ID */
@@ -202,8 +206,10 @@ void do_login(int argc, char** argv)
   #endif
   secure_tty(tty_group);
   
+  #if AUTH > 0
   /* Redisable echoing */
   passphrase_disable_echo();
+  #endif
   
   
   /* Set up clean quiting and time out */
@@ -213,7 +219,9 @@ void do_login(int argc, char** argv)
   siginterrupt(SIGALRM, 1);
   siginterrupt(SIGQUIT, 1);
   siginterrupt(SIGINT, 1);
+  #if AUTH > 0
   alarm(TIMEOUT_SECONDS);
+  #ednif
   
   
   /* Get user information */
@@ -231,10 +239,13 @@ void do_login(int argc, char** argv)
   
   
   /* Verify passphrase or other token, if -f has not been used */
+  #if AUTH > 0
   initialise_login(hostname, username, read_passphrase);
   if ((skip_auth == 0) && authenticate_login())
+  #endif
     printf("(auto-authenticated)\n");
   
+  #if AUTH > 0
   /* Passphrase entered, turn off timeout */
   alarm(0);
   
@@ -249,6 +260,7 @@ void do_login(int argc, char** argv)
   
   /* Reset terminal settings */
   passphrase_reenable_echo();
+  #endif
   
   
   /* Verify account, such as that it is enabled */
@@ -306,6 +318,7 @@ void do_login(int argc, char** argv)
 }
 
 
+#if AUTH > 0
 /**
  * Read passphrase from the terminal
  * 
@@ -322,4 +335,5 @@ char* read_passphrase(void)
     }
   return passphrase;
 }
+#endif
 
