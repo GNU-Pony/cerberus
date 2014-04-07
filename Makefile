@@ -52,8 +52,15 @@ STR_CPPFLAGS = $(foreach D, $(STR_DEFS), -D'$(D)="$($(D))"')
 VRB_CPPFLAGS = $(foreach D, $(VRB_DEFS), -D'$(D)=$($(D))') -DAUTH=$(auth_$(AUTH))
 
 OPTIMISE = -Os
+STD=gnu99
+WARN = -Wall -Wextra -pedantic -Wdouble-promotion -Wformat=2 -Winit-self -Wmissing-include-dirs \
+       -Wfloat-equal -Wmissing-prototypes -Wmissing-declarations -Wtrampolines -Wnested-externs \
+       -Wno-variadic-macros -Wdeclaration-after-statement -Wundef -Wpacked -Wunsafe-loop-optimizations \
+       -Wbad-function-cast -Wwrite-strings -Wlogical-op -Wstrict-prototypes -Wold-style-definition \
+       -Wvector-operation-performance -Wstack-protector -Wunsuffixed-float-constants -Wcast-align \
+       -Wsync-nand -Wshadow -Wredundant-decls -Winline -Wcast-qual -Wsign-conversion -Wstrict-overflow
 CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(VRB_CPPFLAGS)
-CFLAGS = -std=gnu99 -Wall -Wextra
+CFLAGS = -std=$(STD) $(WARN)
 LDFLAGS =
 ifneq ($(AUTH),none)
 LDFLAGS += -lpassphrase
