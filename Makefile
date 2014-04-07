@@ -1,3 +1,9 @@
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
+
 PREFIX = /usr
 USR_PREFIX = /usr
 LOCAL_PREFIX = $(USR_PREFIX)/local
@@ -69,8 +75,14 @@ endif
 OBJ = $(foreach S, $(SRC), obj/$(S).o)
 
 
+.PHONY: default
+default: command info
+
 .PHONY: all
-all: cerberus doc
+all: command doc
+
+.PHONY: command
+command: cerberus
 
 
 .PHONY: cerberus
@@ -87,26 +99,76 @@ obj/%.o: src/%.c src/%.h src/config.h
 
 
 .PHONY: doc
-doc: info
+doc: info pdf ps dvi
 
 .PHONY: info
-info: cerberus.info.gz
-
+info: cerberus.info
 %.info: info/%.texinfo
 	makeinfo "$<"
 
-%.gz: %
-	gzip -9 < "$<" > "$@"
+.PHONY: pdf
+pdf: cerberus.pdf
+%.pdf: info/%.texinfo info/fdl.texinfo
+	mkdir -p obj
+	cd obj ; yes X | texi2pdf ../$<
+	mv obj/$@ $@
+
+.PHONY: dvi
+dvi: cerberus.dvi
+%.dvi: info/%.texinfo info/fdl.texinfo
+	mkdir -p obj
+	cd obj ; yes X | $(TEXI2DVI) ../$<
+	mv obj/$@ $@
+
+.PHONY: ps
+ps: cerberus.ps
+%.ps: info/%.texinfo info/fdl.texinfo
+	mkdir -p obj
+	cd obj ; yes X | texi2pdf --ps ../$<
+	mv obj/$@ $@
 
 
 .PHONY: install
-install: bin/cerberus cerberus.info.gz
+install: install-base install-info
+
+.PHONY: install-all
+install-all: install-base install-doc
+
+.PHONY: install-base
+install-base: install-command install-license
+
+.PHONY: install-command
+install-command: bin/cerberus
 	install -dm755 -- "$(DESTDIR)$(PREFIX)$(INSTALL_BIN)"
 	install  -m755 -- bin/cerberus "$(DESTDIR)$(PREFIX)$(INSTALL_BIN)/$(COMMAND)"
+
+.PHONY: install-license
+install-license:
 	install -dm755 -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)"
 	install  -m644 -- COPYING LICENSE "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)"
+
+.PHONY: install-doc
+install-doc: install-info install-pdf install-ps install-dvi
+
+.PHONY: install-info
+install-info: cerberus.info
 	install -dm755 -- "$(DESTDIR)$(PREFIX)$(DATA)/info"
-	install  -m644 -- cerberus.info.gz "$(DESTDIR)$(PREFIX)$(DATA)/info/$(PKGNAME).info.gz"
+	install  -m644 -- "$<" "$(DESTDIR)$(PREFIX)$(DATA)/info/$(PKGNAME).info"
+
+.PHONY: install-pdf
+install-pdf: cerberus.pdf
+	install -dm755 -- "$(DESTDIR)$(PREFIX)$(DATA)/doc"
+	install  -m644 -- "$<" "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).pdf"
+
+.PHONY: install-ps
+install-ps: cerberus.ps
+	install -dm755 -- "$(DESTDIR)$(PREFIX)$(DATA)/doc"
+	install  -m644 -- "$<" "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).ps"
+
+.PHONY: install-dvi
+install-dvi: cerberus.dvi
+	install -dm755 -- "$(DESTDIR)$(PREFIX)$(DATA)/doc"
+	install  -m644 -- "$<" "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).dvi"
 
 
 .PHONY: uninstall
@@ -115,11 +177,14 @@ uninstall:
 	-rm -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)/COPYING"
 	-rm -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)/LICENSE"
 	-rmdir -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)"
-	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/info/$(PKGNAME).info.gz"
+	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/info/$(PKGNAME).info"
+	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).pdf"
+	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).ps"
+	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).dvi"
 
 
 
 .PHONY: clean
 clean:
-	-rm -r bin obj cerberus.info.gz
+	-rm -r bin obj cerberus.{info,pdf,ps,dvi}
 

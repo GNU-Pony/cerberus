@@ -12,6 +12,9 @@ obj/
 *.out
 *.gch
 *.info
+*.pdf
+*.ps
+*.dvi
 *.gz
 *.bz2
 *.xz
