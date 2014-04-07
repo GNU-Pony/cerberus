@@ -247,7 +247,7 @@ int conv_pam(int num_msg, const struct pam_message** msg, struct pam_response** 
   
   (void) appdata_ptr;
   
-  *resp = calloc(num_msg, sizeof(struct pam_response));
+  *resp = calloc((size_t)num_msg, sizeof(struct pam_response));
   
   for (i = 0; i < num_msg; i++)
     {
