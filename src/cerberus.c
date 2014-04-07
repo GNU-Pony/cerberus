@@ -221,7 +221,7 @@ void do_login(int argc, char** argv)
   siginterrupt(SIGINT, 1);
   #if AUTH > 0
   alarm(TIMEOUT_SECONDS);
-  #ednif
+  #endif
   
   
   /* Get user information */
