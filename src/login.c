@@ -174,8 +174,8 @@ void exec_shell(struct passwd* entry)
     }
   else
     {
-      int i;
-      for (i = n - 1; i >= 0; i--)
+      ssize_t i;
+      for (i = (ssize_t)n - 1; i >= 0; i--)
 	if (*(sh + i) == '/')
 	  {
 	    i++;
