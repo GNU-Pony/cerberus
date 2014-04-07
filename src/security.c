@@ -33,7 +33,7 @@
 #include "security.h"
 
 
-static inline void fail(char* str)
+static void fail(const char* str)
 {
   perror(str);
   sleep(ERROR_SLEEP);
@@ -62,7 +62,7 @@ void secure_tty(gid_t group)
   /* Kill other processes on this TTY */
   tcgetattr(STDIN_FILENO, &tty);
   saved_tty = tty;
-  tty.c_cflag &= ~HUPCL;
+  tty.c_cflag &= (tcflag_t)~HUPCL;
   tcsetattr(0, TCSANOW, &tty);
   close(STDIN_FILENO);
   close(STDOUT_FILENO);

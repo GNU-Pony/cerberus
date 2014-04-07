@@ -99,7 +99,7 @@ void set_environ(struct passwd* entry, char preserve_env)
   char* term = NULL;
   if (_term)
     {
-      int n = 0, i;
+      size_t n = 0, i;
       while (*(_term + n++))
 	;
       term = malloc(n * sizeof(char));
@@ -146,7 +146,7 @@ void exec_shell(struct passwd* entry)
 {
   int child_argc = 0;
   char** child_argv = malloc(5 * sizeof(char*));
-  long n = 0;
+  size_t n = 0;
   char* sh = entry->pw_shell;
   char* login_sh;
   
