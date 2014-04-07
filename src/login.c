@@ -70,7 +70,7 @@ void chdir_home(struct passwd* entry)
 	  sleep(ERROR_SLEEP);
 	  _exit(1);
 	}
-      entry->pw_dir = DEFAULT_HOME;
+      entry->pw_dir = strdup(DEFAULT_HOME);
     }
 }
 
@@ -83,7 +83,7 @@ void chdir_home(struct passwd* entry)
 void ensure_shell(struct passwd* entry)
 {
   if ((entry->pw_shell && *(entry->pw_shell)) == 0)
-    entry->pw_shell = DEFAULT_SHELL;
+    entry->pw_shell = strdup(DEFAULT_SHELL);
 }
 
 
@@ -167,9 +167,9 @@ void exec_shell(struct passwd* entry)
       strcpy(login_sh, "exec ");
       *(login_sh + n) = 0;
       
-      *(child_argv + child_argc++) = DEFAULT_SHELL;
-      *(child_argv + child_argc++) = "-" DEFAULT_SH;
-      *(child_argv + child_argc++) = "-c";
+      *(child_argv + child_argc++) = strdup(DEFAULT_SHELL);
+      *(child_argv + child_argc++) = strdup("-" DEFAULT_SH);
+      *(child_argv + child_argc++) = strdup("-c");
       *(child_argv + child_argc++) = login_sh - 5;
     }
   else
