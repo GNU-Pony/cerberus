@@ -35,7 +35,9 @@ void timeout_quit(int signal)
 {
   (void) signal;
   printf("\nTimed out.\n");
+  #if AUTH != 0
   passphrase_reenable_echo();
+  #endif
   sleep(ERROR_SLEEP);
   _exit(10);
 }
@@ -50,7 +52,9 @@ void user_quit(int signal)
 {
   (void) signal;
   printf("\n");
+  #if AUTH != 0
   passphrase_reenable_echo();
+  #endif
   _exit(130);
 }
 

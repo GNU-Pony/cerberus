@@ -240,7 +240,9 @@ void do_login(int argc, char** argv)
   
   
   /* Verify passphrase or other token, if -f has not been used */
-  #if AUTH > 0
+  #if AUTH == 0
+  (void) hostname;
+  #else
   initialise_login(hostname, username, read_passphrase);
   if ((skip_auth == 0) && authenticate_login())
   #endif
