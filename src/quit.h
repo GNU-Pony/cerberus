@@ -25,14 +25,14 @@
  * 
  * @param  signal  The signal the program received
  */
-void timeout_quit(int signal);
+void timeout_quit(int signal) __attribute__((noreturn));
 
 /**
  * Quit function for user aborts
  * 
  * @param  signal  The signal the program received
  */
-void user_quit(int signal);
+void user_quit(int signal) __attribute__((noreturn));
 
 
 #endif

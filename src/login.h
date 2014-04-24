@@ -56,7 +56,7 @@ void set_environ(struct passwd* entry, char preserve_env);
  * 
  * @param  entry  The user entry in the password file
  */
-void exec_shell(struct passwd* entry);
+void exec_shell(struct passwd* entry) __attribute__((noreturn));
 
 
 #endif
