@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __AUTH_H__
-#define __AUTH_H__
+#ifndef CERBERUS_AUTH_H
+#define CERBERUS_AUTH_H
 
 
 

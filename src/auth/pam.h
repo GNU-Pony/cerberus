@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __PAM_H__
-#define __PAM_H__
+#ifndef CERBERUS_AUTH_PAM_H
+#define CERBERUS_AUTH_PAM_H
 
 
 /**

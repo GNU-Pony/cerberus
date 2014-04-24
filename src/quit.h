@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __QUIT_H__
-#define __QUIT_H__
+#ifndef CERBERUS_QUIT_H
+#define CERBERUS_QUIT_H
 
 
 /**

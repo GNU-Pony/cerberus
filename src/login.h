@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __LOGIN_H__
-#define __LOGIN_H__
+#ifndef CERBERUS_LOGIN_H
+#define CERBERUS_LOGIN_H
 
 #include <pwd.h>
 

@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __CERBERUS_H__
-#define __CERBERUS_H__
+#ifndef CERBERUS_CERBERUS_H
+#define CERBERUS_CERBERUS_H
 
 
 #include <stdio.h>
