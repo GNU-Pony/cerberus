@@ -18,6 +18,8 @@
  */
 #include "cerberus.h"
 
+#include <string.h>
+
 /* TODO use log */
 
 
@@ -253,13 +255,7 @@ void do_login(int argc, char** argv)
   alarm(0);
   
   /* Wipe and free the passphrase from the memory */
-  if (passphrase)
-    {
-      long i;
-      for (i = 0; *(passphrase + i); i++)
-	*(passphrase + i) = 0;
-      free(passphrase);
-    }
+  destroy_passphrase();
   
   /* Reset terminal settings */
   passphrase_reenable_echo();
@@ -339,4 +335,30 @@ char* read_passphrase(void)
   return passphrase;
 }
 #endif
+
+
+# pragma GCC optimize "-O0"
+
+
+/**
+ * Wipe and free the passphrase if it is allocated
+ */
+void destroy_passphrase(void)
+{
+  if (passphrase)
+    {
+      passphrase_wipe(passphrase, strlen(passphrase));
+      free(passphrase);
+      passphrase = NULL;
+    }
+}
+
+
+/**
+ * Wipe the passphrase when the program exits
+ */
+static __attribute__((destructor)) void passphrase_destructor(void)
+{
+  destroy_passphrase();
+}
 
