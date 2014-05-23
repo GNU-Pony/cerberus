@@ -126,7 +126,7 @@ void chown_tty(uid_t owner, gid_t group, char with_fail)
 	    *--vcs = *--vcsa = 0;
 	    while (n)
 	      {
-		*--vcs = *--vcsa = (n % 10) + '0';
+		*--vcs = *--vcsa = (char)((n % 10) + '0');
 		n /= 10;
 	      }
 	    
