@@ -24,6 +24,7 @@
 
 #define HOOK_LOGIN  0
 #define HOOK_LOGOUT  1
+#define HOOK_DENIED  2
 
 
 
@@ -115,6 +116,7 @@ void exec_hook(int hook, int argc, char** argv)
     {
       [HOOK_LOGIN]  = "login",
       [HOOK_LOGOUT] = "logout",
+      [HOOK_DENIED] = "denied",
     };
   
   char** args = malloc((size_t)(argc + 2) * sizeof(char*));
