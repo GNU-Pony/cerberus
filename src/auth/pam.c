@@ -210,7 +210,7 @@ void quit_pam(int sig)
 /**
  * Perform token authentication
  * 
- * @return  Whether the user got automatically authenticated
+ * @return  0: failed, 1: success, 2: auto-authenticated
  */
 char authenticate_pam(void)
 {
@@ -227,11 +227,10 @@ char authenticate_pam(void)
       
       printf("Incorrect passphrase\n");
       pam_end(handle, rc);
-      sleep(FAILURE_SLEEP);
-      _exit(1);
+      return 0;
     }
   
-  return auto_authenticated;
+  return auto_authenticated ? 2 : 1;
 }
 
 

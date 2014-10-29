@@ -74,7 +74,7 @@ void initialise_crypt(char* remote, char* username, char* (*reader)(void))
 /**
  * Perform token authentication
  * 
- * @return  Whether the user got automatically authenticated
+ * @return  0: failed, 1: success, 2: auto-authenticated
  */
 char authenticate_crypt(void)
 {
@@ -111,11 +111,11 @@ char authenticate_crypt(void)
 #endif
   
   if (!(crypted && *crypted)) /* empty means that no passphrase is required (not even Enter) */
-    return 1;
+    return 2;
   
   entered = crypt(passphrase_reader(), crypted /* salt argument stops parsing when encrypted begins */);
   if (entered && !strcmp(entered, crypted))
-    return 0;
+    return 1;
   
   /* Clear ISIG (and everything else) to prevent the user
    * from skipping the brute force protection sleep. */
@@ -124,7 +124,6 @@ char authenticate_crypt(void)
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &stty);
   
   printf("Incorrect passphrase\n");
-  sleep(FAILURE_SLEEP);
-  _exit(1);
+  return 0;
 }
 

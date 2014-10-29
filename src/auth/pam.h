@@ -47,7 +47,7 @@ void close_session_pam(void);
 /**
  * Perform token authentication
  * 
- * @return  Whether the user got automatically authenticated
+ * @return  0: failed, 1: success, 2: auto-authenticated
  */
 char authenticate_pam(void);
 

@@ -32,7 +32,7 @@ void initialise_crypt(char* remote, char* username, char* (*reader)(void));
 /**
  * Perform token authentication
  * 
- * @return  Whether the user got automatically authenticated
+ * @return  0: failed, 1: success, 2: auto-authenticated
  */
 char authenticate_crypt(void);
 
