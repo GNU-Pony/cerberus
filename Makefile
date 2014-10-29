@@ -11,6 +11,7 @@ BIN = /bin
 SBIN = /sbin
 INSTALL_BIN = $(SBIN)
 DEV = /dev
+ETC = /etc
 DATA = /share
 LICENSES = $(DATA)/licenses
 COMMAND = cerberus
@@ -36,6 +37,7 @@ VCS = $(DEV)/vcs
 VCSA = $(DEV)/vcsa
 PATH = $(_LB):$(_UB):$(_SB)
 PATH_ROOT = $(_LS):$(_LB):$(_US):$(_UB):$(_SS):$(_SB)
+CERBERUSRC = $(ETC)/cerberusrc
 
 auth_none = 0
 auth_crypt = 1
@@ -45,7 +47,7 @@ H = \#
 VCS_LEN = $(shell vcs="$(VCS)" ; echo "$${$(H)vcs}")
 VCSA_LEN = $(shell vcsa="$(VCSA)" ; echo "$${$(H)vcsa}")
 
-STR_DEFS = TTY_GROUP DEFAULT_HOME DEFAULT_SH DEFAULT_SHELL DEFAULT_TERM PATH PATH_ROOT VCS VCSA
+STR_DEFS = TTY_GROUP DEFAULT_HOME DEFAULT_SH DEFAULT_SHELL DEFAULT_TERM PATH PATH_ROOT VCS VCSA CERBERUSRC
 VRB_DEFS = VCS_LEN VCSA_LEN
 
 STR_CPPFLAGS = $(foreach D, $(STR_DEFS), -D'$(D)="$($(D))"')

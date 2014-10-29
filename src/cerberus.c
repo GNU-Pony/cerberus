@@ -19,8 +19,12 @@
 #include "cerberus.h"
 
 #include <string.h>
+#include <unistd.h>
 
-/* TODO use log */
+
+#define HOOK_LOGIN  0
+#define HOOK_LOGOUT  1
+
 
 
 #ifdef USE_TTY_GROUP
@@ -65,6 +69,13 @@ int main(int argc, char** argv)
   signal(SIGQUIT, SIG_IGN);
   signal(SIGINT, SIG_IGN);
   
+  /* Run login hook */
+  if (fork() == 0)
+    {
+      exec_hook(HOOK_LOGIN, argc, argv);
+      return 0;
+    }
+  
   /* Wait for the login shell and all grandchildren to exit */
   while ((wait(NULL) == -1) && (errno == EINTR))
     ;
@@ -73,10 +84,9 @@ int main(int argc, char** argv)
   if (tty_device)
     {
       int fd = open(tty_device, O_RDWR | O_NONBLOCK);
-      if (fd)
-	dup2(fd, 0);
-      dup2(fd, 1);
-      dup2(fd, 2);
+      if (fd != 0)  dup2(fd, 0);
+      if (fd != 1)  dup2(fd, 1);
+      if (fd != 2)  dup2(fd, 2);
     }
   
   /* Reset terminal ownership and mode */
@@ -85,7 +95,44 @@ int main(int argc, char** argv)
   /* Close login session */
   close_login_session();
   
+  /* Run logout hook */
+  exec_hook(HOOK_LOGOUT, argc, argv);
   return 0;
+}
+
+
+/**
+ * Exec /etc/cerberusrc
+ * 
+ * @param  hook  The ID of the hook to run
+ * @param  argc  The number of command line arguments
+ * @param  argv  The command line arguments
+ */
+void exec_hook(int hook, int argc, char** argv)
+{
+  static char cerberusrc[] = CERBERUSRC;
+  static char hooks[][7] =
+    {
+      [HOOK_LOGIN]  = "login",
+      [HOOK_LOGOUT] = "logout",
+    };
+  
+  char** args = malloc((size_t)(argc + 2) * sizeof(char*));
+  int i;
+  
+  if (args == NULL)
+    {
+      perror("malloc");
+      return;
+    }
+  
+  args[0] = cerberusrc;
+  args[1] = hooks[hook];
+  for (i = 1; i < argc; i++)
+    args[i + 1] = argv[i];
+  args[argc + 1] = NULL;
+  
+  execv(CERBERUSRC, args);
 }
 
 

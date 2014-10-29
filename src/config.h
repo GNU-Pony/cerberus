@@ -21,6 +21,13 @@
 
 
 /**
+ * Pathname for the program that implemements login and logout hooks
+ */
+#ifndef CERBERUSRC
+#define CERBERUSRC  "/etc/cerberusrc"
+#endif
+
+/**
  * Mode for TTY devices
  */
 #ifndef TTY_PERM
