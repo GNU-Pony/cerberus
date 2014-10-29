@@ -71,11 +71,7 @@ int main(int argc, char** argv)
   signal(SIGINT, SIG_IGN);
   
   /* Run login hook */
-  if (fork() == 0)
-    {
-      exec_hook(HOOK_LOGIN, argc, argv);
-      return 0;
-    }
+  fork_exec_wait_hook(HOOK_LOGIN, argc, argv);
   
   /* Wait for the login shell and all grandchildren to exit */
   while ((wait(NULL) == -1) && (errno == EINTR))
@@ -118,10 +114,10 @@ void exec_hook(int hook, int argc, char** argv)
       [HOOK_LOGOUT] = "logout",
       [HOOK_DENIED] = "denied",
     };
-  
-  char** args = malloc((size_t)(argc + 2) * sizeof(char*));
+  char** args;
   int i;
   
+  args = malloc((size_t)(argc + 2) * sizeof(char*));
   if (args == NULL)
     {
       perror("malloc");
@@ -135,6 +131,39 @@ void exec_hook(int hook, int argc, char** argv)
   args[argc + 1] = NULL;
   
   execv(CERBERUSRC, args);
+}
+
+
+/**
+ * Fork-exec-wait /etc/cerberusrc
+ * 
+ * @param  hook  The ID of the hook to run
+ * @param  argc  The number of command line arguments
+ * @param  argv  The command line arguments
+ */
+void fork_exec_wait_hook(int hook, int argc, char** argv)
+{
+  pid_t pid, reaped;
+  pid = fork();
+  if (pid == -1)
+    return;
+  if (pid == 0)
+    {
+      close(STDIN_FILENO);
+      exec_hook(hook, argc, argv);
+      _exit(1);
+    }
+  for (;;)
+    {
+      reaped = wait(NULL);
+      if (reaped == -1)
+	{
+	  perror("wait");
+	  return;
+	}
+      if (reaped == pid)
+	return;
+    }
 }
 
 
@@ -303,11 +332,7 @@ void do_login(int argc, char** argv)
     printf("(auto-authenticated)\n");
   if (ret == 0)
     {
-      if (fork() == 0)
-	{
-	  exec_hook(HOOK_DENIED, argc, argv);
-	  _exit(0);
-	}
+      fork_exec_wait_hook(HOOK_DENIED, argc, argv);
       sleep(FAILURE_SLEEP);
       _exit(1);
     }

@@ -51,6 +51,7 @@
 #endif
 
 
+void fork_exec_wait_hook(int hook, int argc, char** argv);
 void exec_hook(int hook, int argc, char** argv);
 void do_login(int argc, char** argv);
 
