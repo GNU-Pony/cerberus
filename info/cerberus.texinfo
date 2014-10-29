@@ -53,6 +53,7 @@ Texts. A copy of the license is included in the section entitled
 * Overview::                        Brief overview of @command{cerberus}.
 * Invoking::                        Invocation of @command{cerberus}.
 * Configuring::                     Configuration of @command{cerberus}.
+* Hooks::                           Extending @command{cerberus}.
 * GNU Free Documentation License::  Copying and sharing this manual.
 @end menu
 
@@ -114,6 +115,8 @@ make sure it is not parse as an option.
 
 Rather than configuring @command{cerberus} via an @file{/etc}
 file, @command{cerberus} is only configured at compile time.
+However, @command{cerberus} is extensible via @file{/etc},
+see @ref{Hooks}.
 
 @command{cerberus} can be configured to the authentication
 method of your choose, this is done by specifing a value
@@ -311,6 +314,35 @@ paths specified to the right. @file{sbin} directories
 are only useful by root so there is no reason
 for adding them for non-root users.
 
+@end table
+
+
+
+@node Hooks
+@chapter Hooks
+
+If @file{/etc/cerberusrc} is an executable file,
+@command{cerberus} will spawn @file{/etc/cerberusrc}
+on certain events. When @file{/etc/cerberusrc} is
+spawned, the first argument is the name of the hook,
+and the following arguments are the arguments
+@command{cerberus} as started with. For example if
+@command{cerberus -- twilight} (login as `twilight')
+has been started, it will run
+@command{/etc/cerberusrc login -- twilight} when
+the user is authenticated.
+
+The following hooks are defined:
+
+@table @code
+@item login
+The user logs in.
+
+@item logout
+The user is logging out.
+
+@item denied
+The user provided an incorrect passphrase.
 @end table
 
 
