@@ -70,9 +70,6 @@ int main(int argc, char** argv)
   signal(SIGQUIT, SIG_IGN);
   signal(SIGINT, SIG_IGN);
   
-  /* Run login hook */
-  fork_exec_wait_hook(HOOK_LOGIN, argc, argv);
-  
   /* Wait for the login shell and all grandchildren to exit */
   while ((wait(NULL) == -1) && (errno == EINTR))
     ;
@@ -351,6 +348,10 @@ void do_login(int argc, char** argv)
   
   /* Verify account, such as that it is enabled */
   verify_account();
+  
+  
+  /* Run login hook */
+  fork_exec_wait_hook(HOOK_LOGIN, argc, argv);
   
   
   /* Partial login */
