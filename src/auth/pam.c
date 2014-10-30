@@ -115,6 +115,7 @@ void initialise_pam(char* remote, char* username, char* (*reader)(void))
   
   do_pam(pam_set_item(handle, PAM_RHOST, remote ?: "localhost"));
   do_pam(pam_set_item(handle, PAM_TTY, ttyname(STDIN_FILENO) ?: "(none)"));
+  do_pam(pam_set_item(handle, PAM_USER_PROMPT, "Username: "));
 }
 
 
@@ -123,7 +124,8 @@ void initialise_pam(char* remote, char* username, char* (*reader)(void))
  */
 void verify_account_pam(void)
 {
-  /* FIXME freezes */
+  /* FIXME pam_acct_mgmt exits the program, but freezes if PAM_USER_PROMPT has not been set. */
+  /*       however, if -f is used there is no problem. */
   /*
   int rc = pam_acct_mgmt(handle, 0);
   if (rc == PAM_NEW_AUTHTOK_REQD)
