@@ -324,20 +324,20 @@ void do_login(int argc, char** argv)
   initialise_login(hostname, username, read_passphrase);
   if (skip_auth == 0)
     ret = authenticate_login();
+  /* Passphrase entered, turn off timeout */
+  alarm(0);
   #endif
   if (ret == 2)
     printf("(auto-authenticated)\n");
   if (ret == 0)
     {
+      preexit();
       fork_exec_wait_hook(HOOK_DENIED, argc, argv);
       sleep(FAILURE_SLEEP);
       _exit(1);
     }
   
   #if AUTH > 0
-  /* Passphrase entered, turn off timeout */
-  alarm(0);
-  
   /* Wipe and free the passphrase from the memory */
   destroy_passphrase();
   
@@ -405,7 +405,18 @@ void do_login(int argc, char** argv)
 }
 
 
+
 #if AUTH > 0
+void preexit(void)
+{
+  /* Wipe and free the passphrase from the memory */
+  destroy_passphrase();
+  
+  /* Reset terminal settings */
+  passphrase_reenable_echo();
+}
+
+
 /**
  * Read passphrase from the terminal
  * 

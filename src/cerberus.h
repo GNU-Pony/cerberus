@@ -56,9 +56,11 @@ void exec_hook(int hook, int argc, char** argv);
 void do_login(int argc, char** argv);
 
 #if AUTH > 0
+void preexit(void);
 char* read_passphrase(void);
 #else
-#define read_passphrase  NULL
+#define preexit()          /* do nothing */
+#define read_passphrase()  NULL
 #endif
 
 void destroy_passphrase(void) __attribute__((optimize("-O0")));
