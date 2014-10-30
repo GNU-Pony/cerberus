@@ -45,6 +45,11 @@ static struct passwd* entry;
  */
 pid_t child_pid = 0;
 
+/**
+ * Whether authentication should be skipped
+ */
+static char skip_auth = 0;
+
 #if AUTH > 0
 /**
  * The passphrase
@@ -175,7 +180,6 @@ void do_login(int argc, char** argv)
   char* username = NULL;
   char* hostname = NULL;
   char preserve_env = 0;
-  char skip_auth = 0;
   int ret;
   #ifdef USE_TTY_GROUP
   struct group* group;
@@ -257,9 +261,12 @@ void do_login(int argc, char** argv)
     }
   
   
-  /* Only root may bypass authentication */
   if (skip_auth)
     {
+      /* Reset terminal settings */
+      passphrase_reenable_echo();
+      
+      /* Only root may bypass authentication */
       if (getuid())
 	{
 	  printf("%s: only root by use the -f option\n", *argv);
@@ -285,8 +292,11 @@ void do_login(int argc, char** argv)
   secure_tty(tty_group);
   
   #if AUTH > 0
-  /* Redisable echoing */
-  passphrase_disable_echo();
+  if (skip_auth == 0)
+    {
+      /* Redisable echoing */
+      passphrase_disable_echo();
+    }
   #endif
   
   
@@ -337,13 +347,7 @@ void do_login(int argc, char** argv)
       _exit(1);
     }
   
-  #if AUTH > 0
-  /* Wipe and free the passphrase from the memory */
-  destroy_passphrase();
-  
-  /* Reset terminal settings */
-  passphrase_reenable_echo();
-  #endif
+  preexit();
   
   
   /* Verify account, such as that it is enabled */
@@ -409,11 +413,14 @@ void do_login(int argc, char** argv)
 #if AUTH > 0
 void preexit(void)
 {
-  /* Wipe and free the passphrase from the memory */
-  destroy_passphrase();
-  
-  /* Reset terminal settings */
-  passphrase_reenable_echo();
+  if (skip_auth == 0)
+    {
+      /* Wipe and free the passphrase from the memory */
+      destroy_passphrase();
+      
+      /* Reset terminal settings */
+      passphrase_reenable_echo();
+    }
 }
 
 
