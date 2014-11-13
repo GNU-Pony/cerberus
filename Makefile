@@ -66,21 +66,21 @@ WARN = -Wall -Wextra -Wdouble-promotion -Wformat=2 -Winit-self -Wmissing-include
        -fstrict-aliasing -fstrict-overflow -fipa-pure-const -ftree-vrp -fstack-usage             \
        -funsafe-loop-optimizations
 # excluded:  -pedantic
-CPPFLAGS = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(VRB_CPPFLAGS)
-CFLAGS = -std=$(STD) $(WARN)
-LDFLAGS =
+CPPFLAGS_ = $(EXTRA_CPP_FLAGS) $(STR_CPPFLAGS) $(VRB_CPPFLAGS)
+CFLAGS_ = -std=$(STD) $(WARN)
+LDFLAGS_ =
 ifneq ($(AUTH),none)
-LDFLAGS += -lpassphrase
+LDFLAGS_ += -lpassphrase
 endif
 ifeq ($(AUTH),crypt)
-LDFLAGS += -lcrypt
+LDFLAGS_ += -lcrypt
 endif
 ifeq ($(AUTH),pam)
-LDFLAGS += -lpam
+LDFLAGS_ += -lpam
 endif
 
-CC_FLAGS = $(CPPFLAGS) $(CFLAGS) $(OPTIMISE)
-LD_FLAGS = $(LDFLAGS) $(CFLAGS) $(OPTIMISE)
+CC_FLAGS = $(CPPFLAGS_) $(CFLAGS_) $(OPTIMISE) $(CPPFLAGS) $(CFLAGS)
+LD_FLAGS = $(LDFLAGS_) $(CFLAGS_) $(OPTIMISE) $(LDFLAGS)
 
 SRC = cerberus quit security login
 ifneq ($(AUTH),none)
