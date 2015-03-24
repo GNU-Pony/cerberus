@@ -266,7 +266,8 @@ void do_login(int argc, char** argv)
   
   
   /* Verify that the user may login */
-  if (fork_exec_wait_hook(HOOK_VERIFY, argc, argv) == 1)
+  ret = fork_exec_wait_hook(HOOK_VERIFY, argc, argv);
+  if ((ret >= 0) && WIFEXITED(ret) && (WEXITSTATUS(ret) == 1))
     {
       sleep(ERROR_SLEEP);
       _exit(2);
