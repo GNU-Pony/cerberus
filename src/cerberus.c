@@ -25,6 +25,7 @@
 #define HOOK_LOGIN  0
 #define HOOK_LOGOUT  1
 #define HOOK_DENIED  2
+#define HOOK_VERIFY  3
 
 
 
@@ -115,6 +116,7 @@ void exec_hook(int hook, int argc, char** argv)
       [HOOK_LOGIN]  = "login",
       [HOOK_LOGOUT] = "logout",
       [HOOK_DENIED] = "denied",
+      [HOOK_VERIFY] = "verify",
     };
   char** args;
   int i;
@@ -139,32 +141,34 @@ void exec_hook(int hook, int argc, char** argv)
 /**
  * Fork-exec-wait /etc/cerberusrc
  * 
- * @param  hook  The ID of the hook to run
- * @param  argc  The number of command line arguments
- * @param  argv  The command line arguments
+ * @param   hook  The ID of the hook to run
+ * @param   argc  The number of command line arguments
+ * @param   argv  The command line arguments
+ * @return        The exit value of the hook
  */
-void fork_exec_wait_hook(int hook, int argc, char** argv)
+int fork_exec_wait_hook(int hook, int argc, char** argv)
 {
   pid_t pid, reaped;
+  int status;
   pid = fork();
   if (pid == -1)
-    return;
+    return -1;
   if (pid == 0)
     {
       close(STDIN_FILENO);
       exec_hook(hook, argc, argv);
-      _exit(1);
+      _exit(138);
     }
   for (;;)
     {
-      reaped = wait(NULL);
+      reaped = wait(&status);
       if (reaped == -1)
 	{
 	  perror("wait");
-	  return;
+	  return -1;
 	}
       if (reaped == pid)
-	return;
+	return status == 138 ? -1 : status;
     }
 }
 
@@ -256,6 +260,14 @@ void do_login(int argc, char** argv)
   if (username == NULL)
     {
       printf("%s: no username specified\n", *argv);
+      sleep(ERROR_SLEEP);
+      _exit(2);
+    }
+  
+  
+  /* Verify that the user may login */
+  if (fork_exec_wait_hook(HOOK_VERIFY, argc, argv) == 1)
+    {
       sleep(ERROR_SLEEP);
       _exit(2);
     }
