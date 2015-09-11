@@ -20,12 +20,17 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+#include <errno.h>
 
 
 #define HOOK_LOGIN  0
 #define HOOK_LOGOUT  1
 #define HOOK_DENIED  2
 #define HOOK_VERIFY  3
+
+
+#define close(fd)  while (((close)(fd) < 0) && (errno == EINTR))
 
 
 
@@ -57,6 +62,25 @@ static char skip_auth = 0;
  */
 char* passphrase = NULL;
 #endif
+
+
+/**
+ * Sleep without letting the user stop it
+ * 
+ * @param  s  The number of seconds to sleep
+ */
+static void xsleep(unsigned int s)
+{
+  sigset_t sigset;
+  
+  sigfillset(&sigset);
+  sigprocmask(SIG_BLOCK, &sigset, NULL);
+  
+  while ((s = sleep(s)));
+  
+  sigemptyset(&sigset);
+  sigprocmask(SIG_BLOCK, &sigset, NULL);
+}
 
 
 /**
@@ -356,7 +380,7 @@ void do_login(int argc, char** argv)
     {
       preexit();
       fork_exec_wait_hook(HOOK_DENIED, argc, argv);
-      sleep(FAILURE_SLEEP);
+      xsleep(FAILURE_SLEEP);
       _exit(1);
     }
   

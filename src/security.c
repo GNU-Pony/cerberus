@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <stropts.h>
+#include <errno.h>
 #if defined(OWN_VCSA) || defined(OWN_VCS)
 #include <string.h>
 #include <linux/vt.h>
@@ -31,6 +32,9 @@
 #include "config.h"
 
 #include "security.h"
+
+
+#define close(fd)  while (((close)(fd) < 0) && (errno == EINTR))
 
 
 static void fail(const char* str)
