@@ -84,14 +84,14 @@ char* passphrase = NULL;
 static void xsleep(unsigned int s)
 {
   sigset_t sigset;
+  sigset_t old_sigset;
   
   sigfillset(&sigset);
-  sigprocmask(SIG_BLOCK, &sigset, NULL);
+  sigprocmask(SIG_BLOCK, &sigset, &old_sigset);
   
   while ((s = sleep(s)));
   
-  sigemptyset(&sigset);
-  sigprocmask(SIG_BLOCK, &sigset, NULL);
+  sigprocmask(SIG_SETMASK, &old_sigset, NULL);
 }
 
 
