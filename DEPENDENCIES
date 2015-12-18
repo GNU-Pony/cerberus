@@ -2,12 +2,14 @@ RUNTIME DEPENDENCIES:
 
 	libc
 	linux (opt-out)
-	pam (opt-out)
+	pam (iff compled with pam support)
 	libpassphrase>=1449331105
 
 
 BUILD DEPENDENCIES:
 
+	pam (opt-out)
+	libpassphrase>=1449331105
 	cc (but gcc is preferred)
 	make
 	coreutils
