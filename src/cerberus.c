@@ -460,6 +460,9 @@ void do_login(int argc, char** argv)
 
 
 #if AUTH > 0
+/**
+ * Called before the process exits, to do cleanup
+ */
 void preexit(void)
 {
   if (skip_auth == 0)
@@ -492,7 +495,9 @@ char* read_passphrase(void)
 #endif
 
 
+#ifdef __GNUC__
 # pragma GCC optimize "-O0"
+#endif
 
 
 /**
@@ -512,7 +517,10 @@ void destroy_passphrase(void)
 /**
  * Wipe the passphrase when the program exits
  */
-static __attribute__((destructor)) void passphrase_destructor(void)
+#ifdef __GNUC__
+__attribute__((destructor))
+#endif
+static void passphrase_destructor(void)
 {
   destroy_passphrase();
 }

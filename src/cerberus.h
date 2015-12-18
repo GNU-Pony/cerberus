@@ -63,7 +63,10 @@ char* read_passphrase(void);
 #define read_passphrase()  NULL
 #endif
 
-void destroy_passphrase(void) __attribute__((optimize("-O0")));
+#ifdef __GNUC__
+__attribute__((optimize("-O0")))
+#endif
+void destroy_passphrase(void);
 
 
 #endif

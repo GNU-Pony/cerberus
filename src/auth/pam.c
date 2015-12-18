@@ -32,7 +32,10 @@
 #define __failed(RC)  ((RC) != PAM_SUCCESS)
 
 
-static void quit_pam(int sig) __attribute__((noreturn));
+#ifdef __GNUC__
+__attribute__((noreturn))
+#endif
+static void quit_pam(int sig);
 
 static int conv_pam(int num_msg, const struct pam_message** msg, struct pam_response** resp, void* appdata_ptr);
 
@@ -73,8 +76,10 @@ static char auto_authenticated = 1;
 static char* (*passphrase_reader)(void) = NULL;
 
 
+#ifdef __GNUC__
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wsuggest-attribute=pure"
+#endif
 /**
  * Exit if a PAM instruction failed
  * 
@@ -92,7 +97,9 @@ static void do_pam(int rc)
       _exit(1);
     }
 }
+#ifdef __GNUC__
 # pragma GCC diagnostic pop
+#endif
 
 
 /**

@@ -25,14 +25,20 @@
  * 
  * @param  signal  The signal the program received
  */
-void timeout_quit(int signal) __attribute__((noreturn));
+#ifdef __GNUC__
+__attribute__((noreturn))
+#endif
+void timeout_quit(int signal);
 
 /**
  * Quit function for user aborts
  * 
  * @param  signal  The signal the program received
  */
-void user_quit(int signal) __attribute__((noreturn));
+#ifdef __GNUC__
+__attribute__((noreturn))
+#endif
+void user_quit(int signal);
 
 
 #endif

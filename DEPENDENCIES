@@ -8,7 +8,7 @@ RUNTIME DEPENDENCIES:
 
 BUILD DEPENDENCIES:
 
-	cc
+	cc (but gcc is preferred)
 	make
 	coreutils
 	texinfo (out-put)
