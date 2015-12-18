@@ -24,13 +24,25 @@
 #include <errno.h>
 
 
+/**
+ * Index of the hook used when the user logs in.
+ */
 #define HOOK_LOGIN  0
+
+/**
+ * Index of the hook used when the user logs out.
+ */
 #define HOOK_LOGOUT  1
+
+/**
+ * Index of the hook used when the user was denied access.
+ */
 #define HOOK_DENIED  2
+
+/**
+ * Index of the hook used to verify that the user may log in.
+ */
 #define HOOK_VERIFY  3
-
-
-#define close(fd)  while (((close)(fd) < 0) && (errno == EINTR))
 
 
 

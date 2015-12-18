@@ -34,9 +34,12 @@
 #include "security.h"
 
 
-#define close(fd)  while (((close)(fd) < 0) && (errno == EINTR))
 
-
+/**
+ * Called on failure.
+ * 
+ * @param  str  The function that failed.
+ */
 static void fail(const char* str)
 {
   perror(str);
