@@ -228,7 +228,7 @@ void do_login(int argc, char** argv)
   
   #if AUTH > 0
   /* Disable echoing */
-  passphrase_disable_echo();
+  passphrase_disable_echo1(STDIN_FILENO /* Will be the terminal. */);
   /* This should be done as early and quickly as possible so as little
      as possible of the passphrase gets leaked to the output if the user
      begins entering the passphrase directly after the username. */
@@ -313,7 +313,7 @@ void do_login(int argc, char** argv)
   if (skip_auth)
     {
       /* Reset terminal settings */
-      passphrase_reenable_echo();
+      passphrase_reenable_echo1(STDIN_FILENO);
       
       /* Only root may bypass authentication */
       if (getuid())
@@ -344,7 +344,7 @@ void do_login(int argc, char** argv)
   if (skip_auth == 0)
     {
       /* Redisable echoing */
-      passphrase_disable_echo();
+      passphrase_disable_echo1(STDIN_FILENO);
     }
   #endif
   
@@ -468,7 +468,7 @@ void preexit(void)
       destroy_passphrase();
       
       /* Reset terminal settings */
-      passphrase_reenable_echo();
+      passphrase_reenable_echo1(STDIN_FILENO);
     }
 }
 
@@ -480,7 +480,7 @@ void preexit(void)
  */
 char* read_passphrase(void)
 {
-  passphrase = passphrase_read();
+  passphrase = passphrase_read2(STDIN_FILENO, PASSPHRASE_READ_EXISTING);
   if (passphrase == NULL)
     {
       perror("passphrase_read");
