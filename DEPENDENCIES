@@ -1,0 +1,21 @@
+RUNTIME DEPENDENCIES:
+
+	libc
+	linux (opt-out)
+	pam (opt-out)
+	libpassphrase>=1449331105
+
+
+BUILD DEPENDENCIES:
+
+	cc
+	make
+	coreutils
+	texinfo (out-put)
+
+
+INSTALL DEPENDENCIES:
+
+	make
+	coreutils
+
