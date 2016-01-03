@@ -234,7 +234,7 @@ char authenticate_pam(void)
       stty.c_lflag = 0;
       tcsetattr(STDIN_FILENO, TCSAFLUSH, &stty);
       
-      printf("Incorrect passphrase\n");
+      printf("\nPassphrase incorrect.\nOnly perfect spellers may\nenter this system.\n");
       pam_end(handle, rc);
       return 0;
     }
