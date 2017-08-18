@@ -364,10 +364,10 @@ void do_login(int argc, char** argv)
   /* Get user information */
   if ((entry = getpwnam(username)) == NULL)
     {
-      if (errno)
-	perror("getpwnam");
-      else
+      if (errno == EIO /* seriously...? */ || !errno)
 	printf("User does not exist\n");
+      else if (errno)
+	perror("getpwnam");
       sleep(ERROR_SLEEP);
       _exit(1);
     }
