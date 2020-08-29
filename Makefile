@@ -187,18 +187,18 @@ install-dvi: cerberus.dvi
 
 .PHONY: uninstall
 uninstall:
-	-rm -- "$(DESTDIR)$(PREFIX)$(INSTALL_BIN)/$(COMMAND)"
-	-rm -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)/COPYING"
-	-rm -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)/LICENSE"
-	-rmdir -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)"
-	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/info/$(PKGNAME).info"
-	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).pdf"
-	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).ps"
-	-rm -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).dvi"
+	-rm -f -- "$(DESTDIR)$(PREFIX)$(INSTALL_BIN)/$(COMMAND)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)/COPYING"
+	-rm -f -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)/LICENSE"
+	-rmdir -f -- "$(DESTDIR)$(PREFIX)$(LICENSES)/$(PKGNAME)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)$(DATA)/info/$(PKGNAME).info"
+	-rm -f -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).pdf"
+	-rm -f -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).ps"
+	-rm -f -- "$(DESTDIR)$(PREFIX)$(DATA)/doc/$(PKGNAME).dvi"
 
 
 
 .PHONY: clean
 clean:
-	-rm -r bin obj cerberus.{info,pdf,ps,dvi}
+	-rm -rf -- bin obj cerberus.info cerberus.pdf cerberus.ps cerberus.dvi
 

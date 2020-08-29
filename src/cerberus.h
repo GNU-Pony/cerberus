@@ -1,7 +1,7 @@
 /**
  * cerberus – Minimal login program
  * 
- * Copyright © 2013, 2014, 2015, 2016  Mattias Andrée (maandree@member.fsf.org)
+ * Copyright © 2013, 2014, 2015, 2016, 2020  Mattias Andrée (maandree@kth.se)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@
 #include <signal.h>
 #include <pwd.h>
 #include <errno.h>
-#include <stropts.h>
 #include <termios.h>
 #include <fcntl.h>
 #include <sys/wait.h>
